@@ -1,0 +1,11 @@
+Here's what I think p5-combatTricks's plan should be:
+Display 6 circles, one for colorless, another for white, another for blue, and so on.
+Make the icon class. The class should have one of each:
+    - Color
+    - If it should be highlighted or not (later transform into stacks_of_mana)
+    - Later: SVG image
+    - Maybe radius of icon circle?
+    - Maybe mana color?
+You can do these in either order:
+Enable highlights and keypresses.
+Figure out how to use svg and display it properly. 
