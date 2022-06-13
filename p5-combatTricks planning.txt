@@ -1,11 +1,31 @@
-Here's what I think p5-combatTricks's plan should be:
+Here's what I think the p5-mtgCombatTricks plan should be:
 Display 6 circles, one for colorless, another for white, another for blue, and so on.
-Make the icon class. The class should have one of each:
+Make an Icon class. The class should have one of each:
     - Color
-    - If it should be highlighted or not (later transform into stacks_of_mana)
+    - If it should be highlighted or not (later transform into stacks of mana)
     - Later: SVG image
-    - Maybe radius of icon circle?
-    - Maybe mana color?
+    - Radius of icon circle
+    - Position
+    - First letter of mana color
+Create a function called 'show()' in Icon. It shows a circle with color 'Color' and with radius 'Radius of icon circle' with position 'Position'.
 You can do these in either order:
-Enable highlights and keypresses.
-Figure out how to use svg and display it properly. 
+    Enable highlights and key presses.
+        Create a function called 'select', which:
+            Sets 'If Icon should be highlighted or not' to true as long as 'First letter of mana color' is equal to the string argument.
+        Create a function called 'deselect', which:
+            Sets 'If Icon should be highlighted or not' to false as long as 'First letter of mana color' is equal to the string argument.
+        Let lowercaseKey equal the lowercase of the key typed.
+        If that lowercase key is in the list ['c', 'w', 'u', 'b', 'r', 'g'], then:
+            if the lowercase key equals the actual key (in value), then:
+                We call select on all icons with an argument of the key pressed.
+            Otherwise:
+                We call deselect on all icons with an argument of lowercaseKey.
+
+        Make it so that in Icon.show():
+            We fill with the color at 80% opacity if 'if it should be highlighted or not' is true, otherwise we fill with the designated color at 50% opacity.
+    Figure out how to use svg and display it properly.
+        Research svg and display the svg on each icon in their show() with a tint/fill/whatever of black.
+Play around with the colors of the circles. Make them not pastel-ish.
+Transform 'if it should be highlighted or not' into 'stacks of mana'. 'if it should be highlighted or not' can be calculated by:
+    if 'stacks of mana' is greater than 0.
+Iterate from 0 to mana_stacks and draw a bar at each of them with a height of a predefined constant, and with a spacing of a predefined constant. From what I hear, the formula is: i*(BAR_HEIGHT + BAR_PADDING) - BAR_PADDING/2. Draw a diagram if this doesn't work.
