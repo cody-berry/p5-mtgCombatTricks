@@ -28,4 +28,16 @@ You can do these in either order:
 Play around with the colors of the circles. Make them not pastel-ish.
 Transform 'if it should be highlighted or not' into 'stacks of mana'. 'if it should be highlighted or not' can be calculated by:
     if 'stacks of mana' is greater than 0.
-Iterate from 0 to mana_stacks and draw a bar at each of them with a height of a predefined constant, and with a spacing of a predefined constant. From what I hear, the formula is: i*(BAR_HEIGHT + BAR_PADDING) - BAR_PADDING/2. Draw a diagram if this doesn't work.
+Iterate from 0 to mana_stacks and draw a bar at each of them with a height of a predefined constant, and with a spacing of a predefined constant. From what I hear, the formula is: i*(BAR_HEIGHT + BAR_PADDING) - BAR_PADDING/2. Draw a diagram if this doesn't work. Even if it does, reason through it.
+
+
+
+To figure out what cards are combat tricks:
+    - Check 'keywords'. If it includes flash, it's a combat trick.
+    - Check the type line. If it says 'Instant', it's a combat trick.
+To figure out whether we can cast something:
+    Set 'can we play this card' to true.
+    For each combat trick:
+        - Check the non-bracket non-number letters in the mana cost (not converted).
+        - If we don't have that color, set 'can we play this card' to false.
+
