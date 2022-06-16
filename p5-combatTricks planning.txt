@@ -6,7 +6,7 @@ Make an Icon class. The class should have one of each:
     - Later: SVG image
     - Radius of icon circle
     - Position
-    - First letter of mana color
+    - First letter of mana color (Capitalized)
 Create a function called 'show()' in Icon. It shows a circle with color 'Color' and with radius 'Radius of icon circle' with position 'Position'.
 You can do these in either order:
     Enable highlights and key presses.
@@ -39,5 +39,14 @@ To figure out whether we can cast something:
     Set 'can we play this card' to true.
     For each combat trick:
         - Check the non-bracket non-number letters in the mana cost (not converted).
-        - If we don't have that color, set 'can we play this card' to false.
+        - If we don't have that color, set 'can we play this card' to false. This is the first stage.
+
+    Now remove the code from the last large byte and create a function that calculates if we can play the card given the mana that we have and the mana it takes to cast the card. Also set 'can we play this card' to the output of this function with an input of the number of each mana we have and the specified mana it takes to cast the card. The logic is:
+        - If the converted mana cost of the card is greater than the number of mana we have, we return false. The number of mana that we have is taking the length of the string. If the first character is a number, however, we add that minus 1 to accommodate for the fact that we already added one for that number.
+        - Create a temporary variable storing a list of all the mana we have.
+        - For each letter in the mana cost, we check if we have that letter or C. If we do, pop that element from the list of colors we have.
+    Let's call the above code our 'basic algorithm'.
+
+    In order to use this algorithm to calculate hybrid mana symbols, we create a function that calculates all the possible combinations of our symbols. We'll need the input to be a list of all the colors our string has, which would make the 'basic algorithm' easier because we just have to copy the argument to find the mana symbols we have. The algorithm is:
+
 
