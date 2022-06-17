@@ -44,9 +44,14 @@ To figure out whether we can cast something:
     Now remove the code from the last large byte and create a function that calculates if we can play the card given the mana that we have and the mana it takes to cast the card. Also set 'can we play this card' to the output of this function with an input of the number of each mana we have and the specified mana it takes to cast the card. The logic is:
         - If the converted mana cost of the card is greater than the number of mana we have, we return false. The number of mana that we have is taking the length of the string. If the first character is a number, however, we add that minus 1 to accommodate for the fact that we already added one for that number.
         - Create a temporary variable storing a list of all the mana we have.
-        - For each letter in the mana cost, we check if we have that letter or C. If we do, pop that element from the list of colors we have.
+        - For each letter in the mana cost, we check if we have that letter or C. If we do, pop that element from the list of colors we have. If in any point, we don't have that letter or C, we will need to return false. We return true at the end.
     Let's call the above code our 'basic algorithm'.
 
-    In order to use this algorithm to calculate hybrid mana symbols, we create a function that calculates all the possible combinations of our symbols. We'll need the input to be a list of all the colors our string has, which would make the 'basic algorithm' easier because we just have to copy the argument to find the mana symbols we have. The algorithm is:
+    In order to use this algorithm to calculate hybrid mana symbols, we create a function that calculates all the possible combinations of our symbols. We'll need the input to be a list of all the colors our string has, which would make the 'basic algorithm' easier because we just have to copy the argument to find the mana symbols we have. It also might make encoding the argument easier as well. We'll see later. The algorithm is:
+        - First identify all mana symbols with a slash in it.
+        - Separate the mana symbols with a slash in it from the ones that don't.
+        - For each element of the list with slashes, make each element another list with all possible colors in it.
+        - Define a list of indices. It originates to all 0s with a length of the number of hybrid symbols.
+        - As long as the first index in the list of indices does not exceed or equal that of the first list in the hybrid mana symbol list, we add all the hybrid mana symbol elements at the respective elements in the indices list plus the non-hybrid mana symbols. We add one to the last index in the indices list. As we iterate backwards in the indices list except for the first element, if the respective index is greater than or equal to the length of the respective hybrid mana symbol list element, we wrap the respective index to 0 and the previous index to one more than it was originally.
 
 
