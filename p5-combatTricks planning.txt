@@ -67,3 +67,52 @@ To figure out whether we can cast something:
         - Return false.
 
 
+
+04:07 pm Friday, December 30, 2022
+[1607]→ Planning
+Setup: Loading the cards
+    1) Load the cards from Scryfall. You should have a ScryfallAPI project.
+    2) Print all the cards' names.
+    3) Print all the cards' types. 
+Setup: Card filtering
+    1) With each cards' types, filter out only the instants.
+    2) Check for Flash in keywords.
+Setup: Other
+    1) Load all mana symbols
+    2) Initialize Color classes for each color, including colorless
+Mana: Representing
+    1) Whenever you press 'c', 'w', 'u', 'b', 'r', 'g', say 'add {color}...'
+    2) Whenever you press the keys earlier with shift, say 'remove {color}...'
+    3) Create a Color class.
+    Classes: Color
+        1) Constructor: Initializes color, color name, and color symbol.
+        Non-Constructor Functions: draw()
+            1) Draw a box based on the x and y position of this object.
+            2) If number_of_times_selected is at least 1, color the box.
+            3) Draw the color symbol inside the box, coloring as shown in 2).
+            4) Draw bars equal to number_of_times_selected.
+        Non-Constructor Functions: increment()
+            1) Increment number_of_times_selected.
+        Non-Constructor Functions: decrement()
+            1) Decrement number_of_times_selected if it is above 0.
+    4) Whenever you press one of the keys in step 1, increment {color}.
+    5) Whenever you press one of the keys in step 2, decrement {color}.
+Cards: Cost filtering
+    1) If the CMC of the card is <= the # mana you have, add it to canidites.
+Cards: Can you cast this?
+    1) For every canidite, remove all brackets from its mana cost.
+    2) Remove all numbers and Xs.
+    3) For every color, if 1st is <= the second: you can cast this.
+        1) The # times that color appears
+        2) The number of times you have appended the color
+More: keyPressed
+    If you press Z, show all the canidites and use all included in Cards.
+What is front-end?
+The opposite of back-end.
+What is back-end?
+Any print statement. It can point to things like the Devtools console. 
+
+
+
+
+
