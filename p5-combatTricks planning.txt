@@ -1,73 +1,3 @@
-Here's what I think the p5-mtgCombatTricks plan should be:
-Display 6 circles, one for colorless, another for white, another for blue, and so on.
-Make an Icon class. The class should have one of each:
-    - Color
-    - If it should be highlighted or not (later transform into stacks of mana)
-    - Later: SVG image
-    - Radius of icon circle
-    - Position
-    - First letter of mana color (Capitalized)
-Create a function called 'show()' in Icon. It shows a circle with color 'Color' and with radius 'Radius of icon circle' with position 'Position'.
-You can do these in either order:
-    Enable highlights and key presses.
-        Create a function called 'select', which:
-            Sets 'If Icon should be highlighted or not' to true as long as 'First letter of mana color' is equal to the string argument.
-        Create a function called 'deselect', which:
-            Sets 'If Icon should be highlighted or not' to false as long as 'First letter of mana color' is equal to the string argument.
-        Let lowercaseKey equal the lowercase of the key typed.
-        If that lowercase key is in the list ['c', 'w', 'u', 'b', 'r', 'g'], then:
-            if the lowercase key equals the actual key (in value), then:
-                We call select on all icons with an argument of the key pressed.
-            Otherwise:
-                We call deselect on all icons with an argument of lowercaseKey.
-
-        Make it so that in Icon.show():
-            We fill with the color at 80% opacity if 'if it should be highlighted or not' is true, otherwise we fill with the designated color at 50% opacity.
-    Figure out how to use svg and display it properly.
-        Research svg and display the svg on each icon in their show() with a tint/fill/whatever of black.
-Play around with the colors of the circles. Make them not pastel-ish.
-Transform 'if it should be highlighted or not' into 'stacks of mana'. 'if it should be highlighted or not' can be calculated by:
-    if 'stacks of mana' is greater than 0.
-Iterate from 0 to mana_stacks and draw a bar at each of them with a height of a predefined constant, and with a spacing of a predefined constant. From what I hear, the formula is: i*(BAR_HEIGHT + BAR_PADDING) - BAR_PADDING/2. Draw a diagram if this doesn't work. Even if it does, reason through it.
-
-
-
-To figure out what cards are combat tricks:
-    - Check 'keywords'. If it includes flash, it's a combat trick.
-    - Check the type line. If it says 'Instant', it's a combat trick.
-To figure out whether we can cast something:
-    Set 'can we play this card' to true.
-    For each combat trick:
-        - Check the non-bracket non-number letters in the mana cost (not converted).
-        - If we don't have that color, set 'can we play this card' to false. This is the first stage.
-
-    Now remove the code from the last large byte and create a function that calculates if we can play the card given the mana that we have and the mana it takes to cast the card. Also set 'can we play this card' to the output of this function with an input of the number of each mana we have and the specified mana it takes to cast the card. The logic is:
-        - If the converted mana cost of the card is greater than the number of mana we have, we return 0. The number of mana that we have is taking the length of the string. If the first character is a number, however, we add that minus 1 to accommodate for the fact that we already added one for that number.
-        - Create a temporary variable storing a list of all the mana we have.
-        - For each letter in the mana cost, we check if we have that letter or C. If we do, pop that element from the list of colors we have. If in any point, we don't have that letter or C, we will need to return false. We return true at the end.
-    Let's call the above code our 'basic algorithm'.
-
-    In order to use this algorithm to calculate hybrid mana symbols, we create a function that calculates all the possible combinations of our symbols. We'll need the input to be a list of all the colors our string has, which would make the 'basic algorithm' easier because we just have to copy the argument to find the mana symbols we have. It also might make encoding the argument easier as well. We'll see later. The algorithm is:
-        - First identify all mana symbols with a slash in it.
-        - Separate the mana symbols with a slash in it from the ones that don't.
-        - For each element of the list with slashes, make each element another list with all possible colors in it.
-        - Define a list of indices. It originates to all 0s with a length of the number of hybrid symbols.
-        - As long as the first index in the list of indices does not exceed or equal that of the first list in the hybrid mana symbol list, we add all the hybrid mana symbol elements at the respective elements in the indices list plus the non-hybrid mana symbols. We add one to the last index in the indices list. As we iterate backwards in the indices list except for the first element, if the respective index is greater than or equal to the length of the respective hybrid mana symbol list element, we wrap the respective index to 0 and the previous index to one more than it was originally.
-
-
-    To use the last algorithm and the second-last algorithm to calculate if we can cast a spell or not with hybrid lands and/or hybrid mana symbols in the mana cost, we'll define a function. It's logic is:
-        - Set a variable called 'can we play this card'.
-        - Find the combinations that our hybrid lands could represent.
-        - Find the combinations that the mana cost could be cast for.
-        - For each combination for the mana cost:
-            - For each combination that the hybrid lands could represent:
-                - Set the output of the basic algorithm on the current combinations that we're considering (hybrid land mana symbols, mana cost hybrid symbol)
-            - If 'can we play this card' is 0, then we break from this loop.
-            - If 'can we play this card' is true, then we return true.
-        - Return false.
-
-
-
 04:07 pm Friday, December 30, 2022
 [1607]→ Planning
 Setup: Loading the cards
@@ -106,7 +36,11 @@ Cards: Can you cast this?
         1) The # times that color appears
         2) The number of times you have appended the color
 More: keyPressed
-    If you press Z, show all the canidites and use all included in Cards.
+    1) If you press Z, show all the canidites and use all included in Cards.
+More: Extensions
+    1) Hybrid mana on both sides
+    2) Extra mana-related artifacts like Energy Refractor
+    3) Special instants and flash cards like Machine Over Matter
 What is front-end?
 The opposite of back-end.
 What is back-end?
