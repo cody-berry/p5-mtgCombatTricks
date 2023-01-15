@@ -9,14 +9,21 @@ let fixedWidthFont
 let variableWidthFont
 let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
+// scryfall data url; BRO (the BROther's War)
+let url='https://api.scryfall.com/cards/search?q=set:bro'
+let json /* json file */
 
 
 function preload() {
     font = loadFont('data/consola.ttf')
     fixedWidthFont = loadFont('data/consola.ttf')
     variableWidthFont = loadFont('data/meiryo.ttf')
+    json = loadJSON('https://api.scryfall.com/cards/search?q=set:bro', printData)
 }
 
+function printData(data) {
+    print(data)
+}
 
 function setup() {
     let cnv = createCanvas(600, 300)
