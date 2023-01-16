@@ -11,18 +11,27 @@ let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 // scryfall data url; BRO (the BROther's War)
 let url='https://api.scryfall.com/cards/search?q=set:bro'
-let json /* json file */
+let json=[] /* filtered cards data */
+let names=[] /*  */
 
 
 function preload() {
     font = loadFont('data/consola.ttf')
     fixedWidthFont = loadFont('data/consola.ttf')
     variableWidthFont = loadFont('data/meiryo.ttf')
-    json = loadJSON('https://api.scryfall.com/cards/search?q=set:bro', printData)
+    loadJSON(url, printAndPaginateData)
 }
 
-function printData(data) {
-    print(data)
+function printAndPaginateData(data) {
+    cards = data['data']
+    // add the data to the json
+    print(cards)
+    json = [ ...json, ...cards] /* spread operator: ... */
+    print(json)
+
+    if (data['has_more']) {
+        loadJSON(data['next_page'], printAndPaginateData)
+    }
 }
 
 function setup() {

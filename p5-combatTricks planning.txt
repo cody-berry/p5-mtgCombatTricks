@@ -1,5 +1,4 @@
-04:07 pm Friday, December 30, 2022
-[1607]→ Planning
+Planning
 Setup: Loading the cards
     1) Load the cards from Scryfall. You should have a ScryfallAPI project.
     2) Print all the cards' names.
