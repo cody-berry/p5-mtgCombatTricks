@@ -11,8 +11,7 @@ let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 // scryfall data url; BRO (the BROther's War)
 let url='https://api.scryfall.com/cards/search?q=set:bro'
-let json=[] /* filtered cards data */
-let names=[] /*  */
+let cards=[] /* data for the cards */
 
 
 function preload() {
@@ -22,12 +21,11 @@ function preload() {
     loadJSON(url, printAndPaginateData)
 }
 
+// paganates the data if necessary
 function printAndPaginateData(data) {
-    cards = data['data']
+    let currentCards = data['data']
     // add the data to the json
-    print(cards)
-    json = [ ...json, ...cards] /* spread operator: ... */
-    print(json)
+    cards = [ ...cards, ...currentCards] /* spread operator: ... */
 
     if (data['has_more']) {
         loadJSON(data['next_page'], printAndPaginateData)
@@ -45,9 +43,20 @@ function setup() {
     instructions.html(`<pre>
         numpad 1 → freeze sketch</pre>`)
 
+    printNamesAndTypes(cards)
+
     debugCorner = new CanvasDebugCorner(5)
 }
 
+function printNamesAndTypes(cards) {
+    let names=[] /* a list of names */
+    let types=[] /* a list of types */
+    for (let card of cards) {
+        names.push(card['name'])
+        types.push(card['type_line'])
+    }
+    print(names, types)
+}
 
 function draw() {
     background(234, 34, 24)
