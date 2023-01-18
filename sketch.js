@@ -43,19 +43,20 @@ function setup() {
     instructions.html(`<pre>
         numpad 1 → freeze sketch</pre>`)
 
-    printNamesAndTypes(cards)
+    cards = filterInstants(cards)
+    print(cards)
 
     debugCorner = new CanvasDebugCorner(5)
 }
 
-function printNamesAndTypes(cards) {
-    let names=[] /* a list of names */
-    let types=[] /* a list of types */
+function filterInstants(cards) {
+    let resultingCardList = []
     for (let card of cards) {
-        names.push(card['name'])
-        types.push(card['type_line'])
+        if (card['type_line'] === 'Instant') {
+            resultingCardList.push(card)
+        }
     }
-    print(names, types)
+    return resultingCardList
 }
 
 function draw() {
