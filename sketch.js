@@ -43,16 +43,19 @@ function setup() {
     instructions.html(`<pre>
         numpad 1 → freeze sketch</pre>`)
 
-    cards = filterInstants(cards)
+    cards = filterInstantsAndFlashCards(cards)
     print(cards)
 
     debugCorner = new CanvasDebugCorner(5)
 }
 
-function filterInstants(cards) {
+function filterInstantsAndFlashCards(cards) {
     let resultingCardList = []
     for (let card of cards) {
         if (card['type_line'] === 'Instant') {
+            resultingCardList.push(card)
+        }
+        if (card['keywords'].includes('Flash')) {
             resultingCardList.push(card)
         }
     }
