@@ -12,7 +12,7 @@ let debugCorner /* output debug text in the bottom left corner of the canvas */
 // scryfall data url; BRO (the BROther's War)
 let url='https://api.scryfall.com/cards/search?q=set:bro'
 let cards=[] /* data for the cards */
-let mana = [0,0,0,0,0] /* mana in WUBRG order */
+let mana = [0,0,0,0,0,0] /* mana in WUBRG order, then colorless mana */
 
 
 function preload() {
@@ -20,6 +20,8 @@ function preload() {
     fixedWidthFont = loadFont('data/consola.ttf')
     variableWidthFont = loadFont('data/meiryo.ttf')
     loadJSON(url, printAndPaginateData)
+    // retro artifacts might be useful later.
+    loadJSON('https://api.scryfall.com/cards/search?q=set:brr', printAndPaginateData)
 }
 
 // paganates the data if necessary
@@ -42,7 +44,10 @@ function setup() {
     /* initialize instruction div */
     instructions = select('#ins')
     instructions.html(`<pre>
-        numpad 1 → freeze sketch</pre>`)
+        numpad 1 → freeze sketch
+        W/U/B/R/G/C → Add 1 White/Blue/Black/Red/Green/Colorless mana
+        w/u/b/r/g/c → Remove 1 White/Blue/Black/Red/Green/Colorless mana
+        z → Print all available combat tricks</pre>`)
 
     cards = filterInstantsAndFlashCards(cards)
     print(cards)
@@ -71,22 +76,74 @@ function draw() {
     debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
     debugCorner.showBottom()
 
-    if (frameCount > 3000)
+    if (frameCount > 30000000)
         noLoop()
 }
 
+// Who knows what you can or cannot cast without a function?
+function printAvailableCards() {
+    for (let card of cards) {
+        let cardCMC = card['cmc']
+        if (cardCMC > sum(mana)) {
+        } else {
+            let cardCost = card['mana_cost']
+            let manaMinusUsed = {
+                'W': mana[0],
+                'U': mana[1],
+                'B': mana[2],
+                'R': mana[3],
+                'G': mana[4]
+            }
+            let cannotCastCard = false
+            for (let char of cardCost) {
+                if (!['X', '1', '2', '3',
+                      '4', '5', '6', '7',
+                      '8', '9', '{', '}']
+                      .includes(char) && !cannotCastCard) {
+                    manaMinusUsed[char] -= 1
+                    if (manaMinusUsed[char] < 0) {
+                        cannotCastCard = true
+                    }
+                }
+            }
+            if (!cannotCastCard) {
+                if (card['flavor_text']) {
+                    print(card['name'] + "\n" + card['oracle_text'] + "\n\n" +
+                        card['flavor_text'])
+                } else {
+                    print(card['name'] + "\n" + card['oracle_text'])
+                }
+            }
+        }
+    }
+}
+
+// isn't it nice to have a sum function?
+function sum(list) {
+    let result = 0
+    for (let element of list) {
+        result += element
+    }
+    return result
+}
 
 function keyPressed() {
     /* stop sketch */
     if (keyCode === 97) { /* numpad 1 */
         noLoop()
         instructions.html(`<pre>
-            sketch stopped</pre>`)
+            sketch stopped
+            ⚠Cannot be resumed⚠
+            ❗Please reload❗</pre>`)
     }
 
     if (key === '`') { /* toggle debug corner visibility */
         debugCorner.visible = !debugCorner.visible
         console.log(`debugCorner visibility set to ${debugCorner.visible}`)
+    }
+
+    if (key === 'z') {
+        printAvailableCards()
     }
 
     redefinedKey = key.toString()
@@ -114,7 +171,7 @@ function printRemovedMana(color) {
             print('Invalid ' + mana[1])
             mana[1] = 0
         } else {
-            print('Removing Blue mana: Blue mana now at ' + mana[0])
+            print('Removing Blue mana: Blue mana now at ' + mana[1])
         }
     }
     if (color === 'b') {
@@ -123,7 +180,7 @@ function printRemovedMana(color) {
             print('Invalid ' + mana[2])
             mana[2] = 0
         } else {
-            print('Removing Black mana: Black mana now at ' + mana[0])
+            print('Removing Black mana: Black mana now at ' + mana[2])
         }
     }
     if (color === 'r') {
@@ -132,7 +189,7 @@ function printRemovedMana(color) {
             print('Invalid ' + mana[3])
             mana[3] = 0
         } else {
-            print('Removing Red mana: Red mana now at ' + mana[0])
+            print('Removing Red mana: Red mana now at ' + mana[3])
         }
     }
     if (color === 'g') {
@@ -141,7 +198,16 @@ function printRemovedMana(color) {
             print('Invalid ' + mana[4])
             mana[4] = 0
         } else {
-            print('Removing Green mana: Green mana now at ' + mana[0])
+            print('Removing Green mana: Green mana now at ' + mana[4])
+        }
+    }
+    if (color === 'c') {
+        mana[5]--
+        if (mana[5] < 0) {
+            print('Invalid ' + mana[5])
+            mana[5] = 0
+        } else {
+            print('Removing Colorless mana: Colorless mana now at ' + mana[5])
         }
     }
 }
@@ -166,6 +232,10 @@ function printAddedMana(color) {
     if (color === 'g') {
         mana[4]++
         print('Adding Green mana: Green mana now at ' + mana[4])
+    }
+    if (color === 'c') {
+        mana[5]++
+        print('Adding Colorless mana: Colorless mana now at ' + mana[5])
     }
 }
 
