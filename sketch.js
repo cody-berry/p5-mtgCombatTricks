@@ -12,6 +12,7 @@ let debugCorner /* output debug text in the bottom left corner of the canvas */
 // scryfall data url; BRO (the BROther's War)
 let url='https://api.scryfall.com/cards/search?q=set:bro'
 let cards=[] /* data for the cards */
+let mana = [0,0,0,0,0] /* mana in WUBRG order */
 
 
 function preload() {
@@ -87,8 +88,86 @@ function keyPressed() {
         debugCorner.visible = !debugCorner.visible
         console.log(`debugCorner visibility set to ${debugCorner.visible}`)
     }
+
+    redefinedKey = key.toString()
+    lowercaseKey = redefinedKey.toLowerCase()
+    if (lowercaseKey === key) {
+        printRemovedMana(lowercaseKey)
+    } else {
+        printAddedMana(lowercaseKey)
+    }
 }
 
+function printRemovedMana(color) {
+    if (color === 'w') {
+        mana[0]--
+        if (mana[0] < 0) {
+            print('Invalid ' + mana[0])
+            mana[0] = 0
+        } else {
+            print('Removing White mana: White mana now at ' + mana[0])
+        }
+    }
+    if (color === 'u') {
+        mana[1]--
+        if (mana[1] < 0) {
+            print('Invalid ' + mana[1])
+            mana[1] = 0
+        } else {
+            print('Removing Blue mana: Blue mana now at ' + mana[0])
+        }
+    }
+    if (color === 'b') {
+        mana[2]--
+        if (mana[2] < 0) {
+            print('Invalid ' + mana[2])
+            mana[2] = 0
+        } else {
+            print('Removing Black mana: Black mana now at ' + mana[0])
+        }
+    }
+    if (color === 'r') {
+        mana[3]--
+        if (mana[3] < 0) {
+            print('Invalid ' + mana[3])
+            mana[3] = 0
+        } else {
+            print('Removing Red mana: Red mana now at ' + mana[0])
+        }
+    }
+    if (color === 'g') {
+        mana[4]--
+        if (mana[4] < 0) {
+            print('Invalid ' + mana[4])
+            mana[4] = 0
+        } else {
+            print('Removing Green mana: Green mana now at ' + mana[0])
+        }
+    }
+}
+
+function printAddedMana(color) {
+    if (color === 'w') {
+        mana[0]++
+        print('Adding White mana: White mana now at ' + mana[0])
+    }
+    if (color === 'u') {
+        mana[1]++
+        print('Adding Blue mana: Blue mana now at ' + mana[1])
+    }
+    if (color === 'b') {
+        mana[2]++
+        print('Adding Black mana: Black mana now at ' + mana[2])
+    }
+    if (color === 'r') {
+        mana[3]++
+        print('Adding Red mana: Red mana now at ' + mana[3])
+    }
+    if (color === 'g') {
+        mana[4]++
+        print('Adding Green mana: Green mana now at ' + mana[4])
+    }
+}
 
 /** 🧹 shows debugging info using text() 🧹 */
 class CanvasDebugCorner {
