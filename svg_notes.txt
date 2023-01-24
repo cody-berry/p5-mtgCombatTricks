@@ -1,0 +1,7 @@
+SVG, or Scalable Vector Graphics is based on XML for a web standard defining vector-based graphics in web pages. It can be inserted like any other image. Developers start it with an svg tag with an xml namespace and a version option. You can add height and width attributes. You can add rect, circle, text, and even paths. In the opening, we set the width of the viewport to 100% of the container width. 
+Rect defines a rectangle. In this case we can define a square which is 10 units from the top and left and 100 units tall and wide. The fill attribute sets the fill color. 
+Circle defines a circle or oval. The sample defines a circle centered at 240,60 with a radius of 50 units. 
+You can add Text with the Text tag. 
+Canvas graphic can be drawn as well. The variable can contain a number of dictionaries in side a list, but how do we make it into a pie chart?
+We draw a number of pie slices. We then compute the angle taken up by each arc yb dividing a full circle by the total number of responses and then multiplying that number by the number of people who picked a given choice. 
+
