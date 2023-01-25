@@ -13,6 +13,13 @@ let debugCorner /* output debug text in the bottom left corner of the canvas */
 let url='https://api.scryfall.com/cards/search?q=set:bro'
 let cards=[] /* data for the cards */
 let mana = [0,0,0,0,0,0] /* mana in WUBRG order, then colorless mana */
+let whiteIcon
+let blueIcon
+let blackIcon
+let redIcon
+let greenIcon
+let colorlessIcon
+let phyrexianIcon
 
 
 function preload() {
@@ -22,6 +29,8 @@ function preload() {
     loadJSON(url, printAndPaginateData)
     // retro artifacts might be useful later.
     loadJSON('https://api.scryfall.com/cards/search?q=set:brr', printAndPaginateData)
+
+    // iterate through all the mana symbols
 }
 
 // paganates the data if necessary
@@ -45,8 +54,8 @@ function setup() {
     instructions = select('#ins')
     instructions.html(`<pre>
         numpad 1 → freeze sketch
-        W/U/B/R/G/C → Add 1 White/Blue/Black/Red/Green/Colorless mana
-        w/u/b/r/g/c → Remove 1 White/Blue/Black/Red/Green/Colorless mana
+        W/U/B/R/G/C/A → Add 1 White/Blue/Black/Red/Green/Colorless/All mana
+        w/u/b/r/g/c/a → Remove 1 White/Blue/Black/Red/Green/Colorless/All mana
         z → Print all available combat tricks</pre>`)
 
     cards = filterInstantsAndFlashCards(cards)
@@ -108,10 +117,11 @@ function printAvailableCards() {
             }
             if (!cannotCastCard) {
                 if (card['flavor_text']) {
-                    print(card['name'] + "\n" + card['oracle_text'] + "\n\n" +
-                        card['flavor_text'])
+                    print(card['name'] + "\n" + "\n" + card['type_line'] + "\n" +
+                          card['oracle_text'] + "\n\n" + card['flavor_text'])
                 } else {
-                    print(card['name'] + "\n" + card['oracle_text'])
+                    print(card['name'] + "\n" + card['type_line'] + "\n" +
+                          card['oracle_text'])
                 }
             }
         }
@@ -135,15 +145,18 @@ function keyPressed() {
             sketch stopped
             ⚠Cannot be resumed⚠
             ❗Please reload❗</pre>`)
+        return
     }
 
     if (key === '`') { /* toggle debug corner visibility */
         debugCorner.visible = !debugCorner.visible
         console.log(`debugCorner visibility set to ${debugCorner.visible}`)
+        return
     }
 
     if (key === 'z') {
         printAvailableCards()
+        return
     }
 
     redefinedKey = key.toString()
@@ -210,6 +223,18 @@ function printRemovedMana(color) {
             print('Removing Colorless mana: Colorless mana now at ' + mana[5])
         }
     }
+    if (color === 'a') {
+        let i = 0
+        for (let value of mana) {
+            if (value > 0) {
+                mana[i]--
+            } else {
+                print('Invalid ' + mana[i] + ' ' + i)
+            }
+            i++
+        }
+        print('Removing 1 from all mana')
+    }
 }
 
 function printAddedMana(color) {
@@ -236,6 +261,13 @@ function printAddedMana(color) {
     if (color === 'c') {
         mana[5]++
         print('Adding Colorless mana: Colorless mana now at ' + mana[5])
+    }
+    if (color === 'a') {
+        let i = 0
+        for (let value of mana) {
+            mana[i]++
+        }
+        print('Adding 1 to all mana')
     }
 }
 
