@@ -31,6 +31,13 @@ function preload() {
     loadJSON('https://api.scryfall.com/cards/search?q=set:brr', printAndPaginateData)
 
     // iterate through all the mana symbols
+    whiteIcon = loadImage('svg/w.svg')
+    blueIcon = loadImage('svg/u.svg')
+    blackIcon = loadImage('svg/b.svg')
+    redIcon = loadImage('svg/r.svg')
+    greenIcon = loadImage('svg/g.svg')
+    colorlessIcon = loadImage('svg/c.svg')
+    phyrexianIcon = loadImage('svg/p.svg')
 }
 
 // paganates the data if necessary
@@ -84,6 +91,48 @@ function draw() {
     debugCorner.setText(`frameCount: ${frameCount}`, 2)
     debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
     debugCorner.showBottom()
+
+    tint(59, 27, 100)
+    image(whiteIcon, 50, 50, 50, 50)
+    stroke(59, 27, 100)
+    strokeWeight(2)
+    noFill()
+    rect(47, 47, 103, 103)
+
+    tint(192, 44, 99)
+    image(blueIcon, 120, 50, 50, 50)
+    stroke(192, 44, 99)
+    strokeWeight(2)
+    noFill()
+    rect(117, 47, 173, 103)
+
+    tint(0, 5, 42)
+    image(blackIcon, 190, 50, 50, 50)
+    stroke(0, 5, 45)
+    strokeWeight(2)
+    noFill()
+    rect(187, 47, 243, 103)
+
+    tint(5, 76, 87)
+    image(redIcon, 260, 50, 50, 50)
+    stroke(5, 76, 87)
+    strokeWeight(2)
+    noFill()
+    rect(257, 47, 313, 103)
+
+    tint(155, 100, 75)
+    image(greenIcon, 330, 50, 50, 50)
+    stroke(155, 100, 75)
+    strokeWeight(2)
+    noFill()
+    rect(327, 47, 383, 103)
+
+    tint(59, 10, 92)
+    image(colorlessIcon, 400, 50, 50, 50)
+    stroke(59, 10, 92)
+    strokeWeight(2)
+    noFill()
+    rect(397, 47, 453, 103)
 
     if (frameCount > 30000000)
         noLoop()
