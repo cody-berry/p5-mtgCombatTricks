@@ -58,7 +58,7 @@ function printAndPaginateData(data) {
 }
 
 function setup() {
-    let cnv = createCanvas(600, 300)
+    let cnv = createCanvas(600, 600)
     cnv.parent('#canvas')
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
@@ -67,8 +67,8 @@ function setup() {
     instructions = select('#ins')
     instructions.html(`<pre>
         numpad 1 → freeze sketch
-        W/U/B/R/G/C/A → Add 1 White/Blue/Black/Red/Green/Colorless/All mana
-        w/u/b/r/g/c/a → Remove 1 White/Blue/Black/Red/Green/Colorless/All mana
+        W/U/B/R/G/C → Add 1 White/Blue/Black/Red/Green/Colorless mana
+        w/u/b/r/g/c → Remove 1 White/Blue/Black/Red/Green/Colorless mana
         z → Print all available combat tricks</pre>`)
 
     cards = filterInstantsAndFlashCards(cards)
@@ -254,18 +254,6 @@ function printRemovedMana(color) {
             colorlessColor.decrement()
         }
     }
-    if (color === 'a') {
-        let i = 0
-        for (let value of mana) {
-            if (value > 0) {
-                mana[i]--
-            } else {
-                print('Invalid ' + mana[i] + ' ' + i)
-            }
-            i++
-        }
-        print('Removing 1 from all mana')
-    }
 }
 
 function printAddedMana(color) {
@@ -277,29 +265,27 @@ function printAddedMana(color) {
     if (color === 'u') {
         mana[1]++
         print('Adding Blue mana: Blue mana now at ' + mana[1])
+        blueColor.increment()
     }
     if (color === 'b') {
         mana[2]++
         print('Adding Black mana: Black mana now at ' + mana[2])
+        blackColor.increment()
     }
     if (color === 'r') {
         mana[3]++
         print('Adding Red mana: Red mana now at ' + mana[3])
+        redColor.increment()
     }
     if (color === 'g') {
         mana[4]++
         print('Adding Green mana: Green mana now at ' + mana[4])
+        greenColor.increment()
     }
     if (color === 'c') {
         mana[5]++
         print('Adding Colorless mana: Colorless mana now at ' + mana[5])
-    }
-    if (color === 'a') {
-        let i = 0
-        for (let value of mana) {
-            mana[i]++
-        }
-        print('Adding 1 to all mana')
+        colorlessColor.increment()
     }
 }
 
