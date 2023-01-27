@@ -169,9 +169,7 @@ function keyPressed() {
     if (keyCode === 97) { /* numpad 1 */
         noLoop()
         instructions.html(`<pre>
-            sketch stopped
-            ⚠Cannot be resumed⚠
-            ❗Please reload❗</pre>`)
+            sketch stopped</pre>`)
         return
     }
 
@@ -203,6 +201,7 @@ function printRemovedMana(color) {
             mana[0] = 0
         } else {
             print('Removing White mana: White mana now at ' + mana[0])
+            whiteColor.decrement()
         }
     }
     if (color === 'u') {
@@ -212,6 +211,7 @@ function printRemovedMana(color) {
             mana[1] = 0
         } else {
             print('Removing Blue mana: Blue mana now at ' + mana[1])
+            blueColor.decrement()
         }
     }
     if (color === 'b') {
@@ -221,6 +221,7 @@ function printRemovedMana(color) {
             mana[2] = 0
         } else {
             print('Removing Black mana: Black mana now at ' + mana[2])
+            blackColor.decrement()
         }
     }
     if (color === 'r') {
@@ -230,6 +231,7 @@ function printRemovedMana(color) {
             mana[3] = 0
         } else {
             print('Removing Red mana: Red mana now at ' + mana[3])
+            redColor.decrement()
         }
     }
     if (color === 'g') {
@@ -239,6 +241,7 @@ function printRemovedMana(color) {
             mana[4] = 0
         } else {
             print('Removing Green mana: Green mana now at ' + mana[4])
+            greenColor.decrement()
         }
     }
     if (color === 'c') {
@@ -248,6 +251,7 @@ function printRemovedMana(color) {
             mana[5] = 0
         } else {
             print('Removing Colorless mana: Colorless mana now at ' + mana[5])
+            colorlessColor.decrement()
         }
     }
     if (color === 'a') {
@@ -268,6 +272,7 @@ function printAddedMana(color) {
     if (color === 'w') {
         mana[0]++
         print('Adding White mana: White mana now at ' + mana[0])
+        whiteColor.increment()
     }
     if (color === 'u') {
         mana[1]++
@@ -408,8 +413,15 @@ class Color {
         noFill()
         strokeWeight(2)
         rect(this.xPosition-3, this.yPosition-3, this.xPosition+53, this.yPosition+53)
+
         tint(this.color[0], this.color[1], this.color[2])
         image(this.colorSVGFile, this.xPosition, this.yPosition, 50, 50)
+
+        noStroke()
+        fill(this.color[0], this.color[1], this.color[2])
+        for (let i = 0; i < this.numSelected; i++) {
+            rect(this.xPosition-3, this.yPosition + 60 + i*10, this.xPosition+53, this.yPosition+64 + i*10, 2)
+        }
     }
 
     /* Nothing to describe */
