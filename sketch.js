@@ -20,6 +20,7 @@ let redIcon
 let greenIcon
 let colorlessIcon
 let phyrexianIcon
+let whiteColor
 
 
 function preload() {
@@ -400,5 +401,45 @@ class CanvasDebugCorner {
                 text(msg, LEFT_MARGIN, LINE_HEIGHT*i + DEBUG_Y_OFFSET)
             }
         }
+    }
+}
+
+/** defines a color and displays it using image() and svg files */
+class Color {
+    /* Argument definition:
+     * colorName → The prefix letter of the color
+     * colorSymbol → The SVG file that is displayed when draw() is called
+     * color → the color of the symbol that will be filled/tinted on draw()
+     * x/y → defines the position of the image when drawn on draw() */
+    constructor(colorName, colorSymbol, color, x, y) {
+        this.color = color
+        this.colorPrefixName = colorName
+        this.colorSVGFile = colorSymbol
+        this.xPosition = x
+        this.yPosition = y
+        /* the number of times the color has been selected */
+        this.numSelected = 0
+    }
+
+    /* Argument definition:
+     * NONE
+     * Function definition:
+     * Draws this.SVG file on the screen and displays a little rectangle
+     * surrounding it */
+    draw() {
+        fill(this.color)
+        rect(this.xPosition-3, this.yPosition-3, this.xPosition+53, this.yPosition+53)
+        tint(this.color)
+        image(this.colorSVGFile, this.xPosition, this.yPosition, 50, 50)
+    }
+
+    /* Nothing to describe */
+    increment() {
+        this.numSelected++
+    }
+
+    /* Nothing to describe */
+    decrement() {
+        this.numSelected--
     }
 }
