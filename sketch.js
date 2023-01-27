@@ -21,6 +21,11 @@ let greenIcon
 let colorlessIcon
 let phyrexianIcon
 let whiteColor
+let blueColor
+let blackColor
+let redColor
+let greenColor
+let colorlessColor
 
 
 function preload() {
@@ -69,6 +74,9 @@ function setup() {
     cards = filterInstantsAndFlashCards(cards)
     print(cards)
 
+    whiteColor = new Color('White', whiteIcon, [59, 25, 95], 50, 50)
+    blueColor = new Color('Blue', blueIcon, [192, 40, 93], 120, 50)
+
     debugCorner = new CanvasDebugCorner(5)
 }
 
@@ -93,19 +101,8 @@ function draw() {
     debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
     debugCorner.showBottom()
 
-    tint(59, 27, 100)
-    image(whiteIcon, 50, 50, 50, 50)
-    stroke(59, 27, 100)
-    strokeWeight(2)
-    noFill()
-    rect(47, 47, 103, 103)
-
-    tint(192, 44, 99)
-    image(blueIcon, 120, 50, 50, 50)
-    stroke(192, 44, 99)
-    strokeWeight(2)
-    noFill()
-    rect(117, 47, 173, 103)
+    whiteColor.draw()
+    blueColor.draw()
 
     tint(0, 5, 42)
     image(blackIcon, 190, 50, 50, 50)
@@ -427,9 +424,11 @@ class Color {
      * Draws this.SVG file on the screen and displays a little rectangle
      * surrounding it */
     draw() {
-        fill(this.color)
+        stroke(this.color[0], this.color[1], this.color[2])
+        noFill()
+        strokeWeight(2)
         rect(this.xPosition-3, this.yPosition-3, this.xPosition+53, this.yPosition+53)
-        tint(this.color)
+        tint(this.color[0], this.color[1], this.color[2])
         image(this.colorSVGFile, this.xPosition, this.yPosition, 50, 50)
     }
 
