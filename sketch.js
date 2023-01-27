@@ -76,6 +76,10 @@ function setup() {
 
     whiteColor = new Color('White', whiteIcon, [59, 25, 95], 50, 50)
     blueColor = new Color('Blue', blueIcon, [192, 40, 93], 120, 50)
+    blackColor = new Color('Black', blackIcon, [0, 3, 47], 190, 50)
+    redColor = new Color('Red', redIcon, [5, 70, 84], 260, 50)
+    greenColor = new Color('Green', greenIcon, [155, 95, 71], 330, 50)
+    colorlessColor = new Color('Colorless', colorlessIcon, [240, 2, 87], 400, 50)
 
     debugCorner = new CanvasDebugCorner(5)
 }
@@ -103,36 +107,12 @@ function draw() {
 
     whiteColor.draw()
     blueColor.draw()
+    blackColor.draw()
+    redColor.draw()
+    greenColor.draw()
+    colorlessColor.draw()
 
-    tint(0, 5, 42)
-    image(blackIcon, 190, 50, 50, 50)
-    stroke(0, 5, 45)
-    strokeWeight(2)
-    noFill()
-    rect(187, 47, 243, 103)
-
-    tint(5, 76, 87)
-    image(redIcon, 260, 50, 50, 50)
-    stroke(5, 76, 87)
-    strokeWeight(2)
-    noFill()
-    rect(257, 47, 313, 103)
-
-    tint(155, 100, 75)
-    image(greenIcon, 330, 50, 50, 50)
-    stroke(155, 100, 75)
-    strokeWeight(2)
-    noFill()
-    rect(327, 47, 383, 103)
-
-    tint(59, 10, 92)
-    image(colorlessIcon, 400, 50, 50, 50)
-    stroke(59, 10, 92)
-    strokeWeight(2)
-    noFill()
-    rect(397, 47, 453, 103)
-
-    if (frameCount > 30000000)
+    if (frameCount > 30000)
         noLoop()
 }
 
