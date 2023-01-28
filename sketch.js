@@ -26,7 +26,7 @@ let blackColor
 let redColor
 let greenColor
 let colorlessColor
-let availableCards = [] // what cards can we cast?
+let availableCardImages = [] // what cards can we cast?
 
 
 function preload() {
@@ -62,7 +62,7 @@ function printAndPaginateData(data) {
 }
 
 function setup() {
-    let cnv = createCanvas(600, 600)
+    let cnv = createCanvas(600, 12000)
     cnv.parent('#canvas')
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
@@ -120,15 +120,28 @@ function draw() {
     line(0, 200, 600, 200)
     line(0, 203, 600, 203)
 
+    strokeWeight(0.5)
+    fill(100)
+    text('Cards able to be cast', 4, 225)
+
+    // let col = 0
+    // let row = 0
+    // for (let cardImage of availableCardImages) {
+    //     col += 1
+    //     if (col > 4) {
+    //         col = 1
+    //         row++
+    //     }
+    //     // card loaded?
+    //     if (cardImage) {
+    //         image(cardImage, -100+col*140, 230+row*230, 120, 200)
+    //     }
+    // }
+
     let col = 0
     let row = 0
-    for (let card of cards) {
-        col += 1
-        if (col > 4) {
-            col = 1
-            row++
-        }
-        // image(loadImage(card['image_uris']['png']), 50, 210)
+    for (let cardCMC in availableCardImages) {
+
     }
 
     if (frameCount > 30000)
@@ -136,13 +149,13 @@ function draw() {
 
     /* debugCorner needs to be last so its z-index is highest */
     debugCorner.setText(`frameCount: ${frameCount}`, 2)
-    debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
+    debugCorner.setText(`fps: ${frameRate().toFixed(1)}`, 1)
     debugCorner.showBottom()
 }
 
 // Who knows what you can or cannot cast without a function?
 function printAvailableCards() {
-    availableCards = []
+    let availableCardImages = {}
     for (let card of cards) {
         let cardCMC = card['cmc']
         if (cardCMC > sum(mana)) {
@@ -175,10 +188,15 @@ function printAvailableCards() {
                     print(card['name'] + "\n" + card['type_line'] + "\n" +
                           card['oracle_text'])
                 }
+                if (availableCardImages[card['cmc']]) {
+                    availableCardImages[card['cmc']].push(loadImage(card['image_uris']['png']))
+                } else {
+                    availableCardImages[card['cmc']] = [loadImage(card['image_uris']['png'])]
+                }
             }
-            availableCards.push(card)
         }
     }
+    return availableCardImages
 }
 
 // isn't it nice to have a sum function?
@@ -206,7 +224,8 @@ function keyPressed() {
     }
 
     if (key === 'z') {
-        printAvailableCards()
+        availableCardImages = printAvailableCards()
+        print(availableCardImages)
         return
     }
 
