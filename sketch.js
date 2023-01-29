@@ -26,6 +26,7 @@ let blackColor
 let redColor
 let greenColor
 let colorlessColor
+let availableCards = [] // what cards can we cast?
 
 
 function preload() {
@@ -46,7 +47,7 @@ function preload() {
     phyrexianIcon = loadImage('svg/p.svg')
 }
 
-// paganates the data if necessary
+// paginates the data if necessary, then filters the instants and flash cards
 function printAndPaginateData(data) {
     let currentCards = data['data']
     // add the data to the json
@@ -55,6 +56,9 @@ function printAndPaginateData(data) {
     if (data['has_more']) {
         loadJSON(data['next_page'], printAndPaginateData)
     }
+
+
+    cards = filterInstantsAndFlashCards(cards)
 }
 
 function setup() {
@@ -70,9 +74,6 @@ function setup() {
         W/U/B/R/G/C → Add 1 White/Blue/Black/Red/Green/Colorless mana
         w/u/b/r/g/c → Remove 1 White/Blue/Black/Red/Green/Colorless mana
         z → Print all available combat tricks</pre>`)
-
-    cards = filterInstantsAndFlashCards(cards)
-    print(cards)
 
     whiteColor = new Color('White', whiteIcon, [59, 25, 95], 50, 50)
     blueColor = new Color('Blue', blueIcon, [192, 40, 93], 120, 50)
@@ -100,10 +101,11 @@ function filterInstantsAndFlashCards(cards) {
 function draw() {
     background(234, 34, 24)
 
-    /* debugCorner needs to be last so its z-index is highest */
-    debugCorner.setText(`frameCount: ${frameCount}`, 2)
-    debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
-    debugCorner.showBottom()
+    fill(100)
+    textFont(variableWidthFont)
+    stroke(100)
+    strokeWeight(0.5)
+    text('Mana selection', 4, 25)
 
     whiteColor.draw()
     blueColor.draw()
@@ -112,12 +114,35 @@ function draw() {
     greenColor.draw()
     colorlessColor.draw()
 
+    stroke(100)
+    strokeWeight(3)
+
+    line(0, 200, 600, 200)
+    line(0, 203, 600, 203)
+
+    let col = 0
+    let row = 0
+    for (let card of cards) {
+        col += 1
+        if (col > 4) {
+            col = 1
+            row++
+        }
+        // image(loadImage(card['image_uris']['png']), 50, 210)
+    }
+
     if (frameCount > 30000)
         noLoop()
+
+    /* debugCorner needs to be last so its z-index is highest */
+    debugCorner.setText(`frameCount: ${frameCount}`, 2)
+    debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
+    debugCorner.showBottom()
 }
 
 // Who knows what you can or cannot cast without a function?
 function printAvailableCards() {
+    availableCards = []
     for (let card of cards) {
         let cardCMC = card['cmc']
         if (cardCMC > sum(mana)) {
@@ -151,6 +176,7 @@ function printAvailableCards() {
                           card['oracle_text'])
                 }
             }
+            availableCards.push(card)
         }
     }
 }
@@ -258,34 +284,52 @@ function printRemovedMana(color) {
 
 function printAddedMana(color) {
     if (color === 'w') {
-        mana[0]++
-        print('Adding White mana: White mana now at ' + mana[0])
-        whiteColor.increment()
+        if (mana[0] > 8) {
+            print('Invalid ' + mana[0])
+        } else {
+            mana[0]++
+            whiteColor.increment()
+        }
     }
     if (color === 'u') {
-        mana[1]++
-        print('Adding Blue mana: Blue mana now at ' + mana[1])
-        blueColor.increment()
+        if (mana[1] > 8) {
+            print('Invalid ' + mana[1])
+        } else {
+            mana[1]++
+            blueColor.increment()
+        }
     }
     if (color === 'b') {
-        mana[2]++
-        print('Adding Black mana: Black mana now at ' + mana[2])
-        blackColor.increment()
+        if (mana[2] > 8) {
+            print('Invalid ' + mana[2])
+        } else {
+            mana[2]++
+            blackColor.increment()
+        }
     }
     if (color === 'r') {
-        mana[3]++
-        print('Adding Red mana: Red mana now at ' + mana[3])
-        redColor.increment()
+        if (mana[3] > 8) {
+            print('Invalid ' + mana[3])
+        } else {
+            mana[3]++
+            redColor.increment()
+        }
     }
     if (color === 'g') {
-        mana[4]++
-        print('Adding Green mana: Green mana now at ' + mana[4])
-        greenColor.increment()
+        if (mana[4] > 8) {
+            print('Invalid ' + mana[4])
+        } else {
+            mana[4]++
+            greenColor.increment()
+        }
     }
     if (color === 'c') {
-        mana[5]++
-        print('Adding Colorless mana: Colorless mana now at ' + mana[5])
-        colorlessColor.increment()
+        if (mana[5] > 8) {
+            print('Invalid ' + mana[5])
+        } else {
+            mana[5]++
+            colorlessColor.increment()
+        }
     }
 }
 
@@ -381,7 +425,7 @@ class Color {
      * x/y → defines the position of the image when drawn on draw() */
     constructor(colorName, colorSymbol, color, x, y) {
         this.color = color
-        this.colorPrefixName = colorName
+        this.colorName = colorName
         this.colorSVGFile = colorSymbol
         this.xPosition = x
         this.yPosition = y
