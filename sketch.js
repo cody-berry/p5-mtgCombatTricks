@@ -62,7 +62,7 @@ function printAndPaginateData(data) {
 }
 
 function setup() {
-    let cnv = createCanvas(600, 12000)
+    let cnv = createCanvas(700, 12000)
     cnv.parent('#canvas')
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
@@ -117,8 +117,8 @@ function draw() {
     stroke(100)
     strokeWeight(3)
 
-    line(0, 200, 600, 200)
-    line(0, 203, 600, 203)
+    line(0, 200, 700, 200)
+    line(0, 203, 700, 203)
 
     strokeWeight(0.5)
     fill(100)
@@ -140,12 +140,37 @@ function draw() {
 
     let col = 0
     let row = 0
+    let travelledRows = 0
     for (let cardCMC in availableCardImages) {
+        for (let card of availableCardImages[cardCMC]) {
+            col += 1
+            if (col > 4) {
+                col = 1
+                travelledRows++
+            }
+            if (card) {
+                image(card, -50 + col*140, 230+(row+travelledRows)*230, 120, 200)
+            }
+        }
 
+        travelledRows += 1
+        fill(0, 0, 100, 32)
+        rect(10, (row+1)*230+5, 70, (row+travelledRows+1)*230-5)
+        fill(50)
+        ellipse(40, 225 + 115*travelledRows + row*230, 30)
+        fill(100)
+        stroke(100)
+        textAlign(CENTER)
+        text(cardCMC, 40, 230 + 115*travelledRows + row*230)
+        row += travelledRows
+        travelledRows = 0
+        col = 0
     }
 
     if (frameCount > 30000)
         noLoop()
+
+    textAlign(LEFT)
 
     /* debugCorner needs to be last so its z-index is highest */
     debugCorner.setText(`frameCount: ${frameCount}`, 2)
@@ -172,26 +197,21 @@ function printAvailableCards() {
             for (let char of cardCost) {
                 if (!['X', '1', '2', '3',
                       '4', '5', '6', '7',
-                      '8', '9', '{', '}']
+                      '8', '9', '{', '}'] // characters to be ignored
                       .includes(char) && !cannotCastCard) {
-                    manaMinusUsed[char] -= 1
+                    manaMinusUsed[char] -= 1 // it's gonna be W, U, B, R, or G
                     if (manaMinusUsed[char] < 0) {
                         cannotCastCard = true
                     }
                 }
             }
             if (!cannotCastCard) {
-                if (card['flavor_text']) {
-                    print(card['name'] + "\n" + "\n" + card['type_line'] + "\n" +
-                          card['oracle_text'] + "\n\n" + card['flavor_text'])
-                } else {
-                    print(card['name'] + "\n" + card['type_line'] + "\n" +
-                          card['oracle_text'])
-                }
+                let img = loadImage(card['image_uris']['png'])
+
                 if (availableCardImages[card['cmc']]) {
-                    availableCardImages[card['cmc']].push(loadImage(card['image_uris']['png']))
+                    availableCardImages[card['cmc']].push(img)
                 } else {
-                    availableCardImages[card['cmc']] = [loadImage(card['image_uris']['png'])]
+                    availableCardImages[card['cmc']] = [img]
                 }
             }
         }
