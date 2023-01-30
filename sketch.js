@@ -149,19 +149,20 @@ function draw() {
                 travelledRows++
             }
             if (card) {
-                image(card, -50 + col*140, 230+(row+travelledRows)*230, 120, 200)
+                card.resize(120, 0)
+                image(card, -50 + col*140, 240+(row+travelledRows)*200)
             }
         }
 
         travelledRows += 1
         fill(0, 0, 100, 32)
-        rect(10, (row+1)*230+5, 70, (row+travelledRows+1)*230-5)
+        rect(10, 230+(row)*200+5, 70, 230+(row+travelledRows)*200-5)
         fill(50)
-        ellipse(40, 225 + 115*travelledRows + row*230, 30)
+        ellipse(40, 225 + 115*travelledRows + row*200, 30)
         fill(100)
         stroke(100)
         textAlign(CENTER)
-        text(cardCMC, 40, 230 + 115*travelledRows + row*230)
+        text(cardCMC, 40, 230 + 115*travelledRows + row*200)
         row += travelledRows
         travelledRows = 0
         col = 0
@@ -207,7 +208,6 @@ function printAvailableCards() {
             }
             if (!cannotCastCard) {
                 let img = loadImage(card['image_uris']['png'])
-
                 if (availableCardImages[card['cmc']]) {
                     availableCardImages[card['cmc']].push(img)
                 } else {
