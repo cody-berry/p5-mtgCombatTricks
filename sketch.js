@@ -26,7 +26,10 @@ let blackColor
 let redColor
 let greenColor
 let colorlessColor
-let availableCardImages = [] // what cards can we cast?
+let availableCardImages = {} // what cards can we cast?
+let testTrick // just a Trick, but for testing purposes. Using W.svg for the
+// card
+let currentCardCMCQueue // this can be useful passing between functions
 
 
 function preload() {
@@ -82,6 +85,8 @@ function setup() {
     greenColor = new Color('Green', greenIcon, [155, 95, 71], 330, 50)
     colorlessColor = new Color('Colorless', colorlessIcon, [240, 2, 87], 400, 50)
 
+    testTrick = new Trick(whiteIcon, 0, 0, 120)
+
     debugCorner = new CanvasDebugCorner(5)
 }
 
@@ -106,6 +111,8 @@ function draw() {
     stroke(100)
     strokeWeight(0.5)
     text('Mana selection', 4, 25)
+
+    testTrick.draw()
 
     whiteColor.draw()
     blueColor.draw()
@@ -148,10 +155,10 @@ function draw() {
                 col = 1
                 travelledRows++
             }
-            if (card) {
-                card.resize(120, 0)
-                image(card, -50 + col*140, 240+(row+travelledRows)*200)
-            }
+
+            card.changePos(-50 + col*140, 240+(row+travelledRows)*200)
+            card.setShow(true)
+            card.draw()
         }
 
         travelledRows += 1
@@ -180,43 +187,57 @@ function draw() {
 }
 
 // Who knows what you can or cannot cast without a function?
-function printAvailableCards() {
-    let availableCardImages = {}
+function storeAvailableCards() {
+    availableCardImages = {} // the available cards in a dictionary with
+    // keys of cmc's and values of a list of card images
+    currentCardCMCQueue = [] // right now I'm figuring out an algorithm to
+    // append Tricks correctly.
     for (let card of cards) {
         let cardCMC = card['cmc']
+        currentCardCMCQueue.push(cardCMC)
         if (cardCMC > sum(mana)) {
         } else {
             let cardCost = card['mana_cost']
             let manaMinusUsed = {
-                'W': mana[0],
-                'U': mana[1],
-                'B': mana[2],
-                'R': mana[3],
-                'G': mana[4]
-            }
+                'W': mana[0], // mana[0] = white mana
+                'U': mana[1], // mana[1] = blue mana
+                'B': mana[2], // mana[2] = black mana
+                'R': mana[3], // mana[3] = red mana
+                'G': mana[4]  // mana[4] = green mana
+            } // colorless mana is not included because we ignore numbers
             let cannotCastCard = false
             for (let char of cardCost) {
                 if (!['X', '1', '2', '3',
                       '4', '5', '6', '7',
                       '8', '9', '{', '}'] // characters to be ignored
                       .includes(char) && !cannotCastCard) {
-                    manaMinusUsed[char] -= 1 // it's gonna be W, U, B, R, or G
+                    manaMinusUsed[char] -= 1 // char's gonna be W, U, B, R, or G
                     if (manaMinusUsed[char] < 0) {
                         cannotCastCard = true
                     }
                 }
             }
             if (!cannotCastCard) {
-                let img = loadImage(card['image_uris']['png'])
-                if (availableCardImages[card['cmc']]) {
-                    availableCardImages[card['cmc']].push(img)
-                } else {
-                    availableCardImages[card['cmc']] = [img]
-                }
+                loadImage(card['image_uris']['png'], addCardToImages)
             }
         }
     }
     return availableCardImages
+}
+
+function addCardToImages(cardImage) {
+    // the Trick for displaying
+    let newTrick = new Trick(cardImage, 0, 0, 120)
+    newTrick.setShow(false)
+
+    // in storeAvailableCards, I used a currentCardCMCQueue. This didn't
+    // work out properly.
+    let cardCMC = currentCardCMCQueue[0]
+    if (availableCardImages[cardCMC]) {
+        availableCardImages[cardCMC].push(newTrick)
+    } else {
+        availableCardImages[cardCMC] = [newTrick]
+    }
 }
 
 // isn't it nice to have a sum function?
@@ -243,17 +264,19 @@ function keyPressed() {
         return
     }
 
-    if (key === 'z') {
-        availableCardImages = printAvailableCards()
-        print(availableCardImages)
+    if (key === 'z') { /* store, then show in draw(), all the cards that can
+                          be cast*/
+        storeAvailableCards()
         return
     }
 
-    redefinedKey = key.toString()
-    lowercaseKey = redefinedKey.toLowerCase()
+    let redefinedKey = key.toString()
+    let lowercaseKey = redefinedKey.toLowerCase()
     if (lowercaseKey === key) {
+        /* remove the specified mana */
         printRemovedMana(lowercaseKey)
     } else {
+        /* add the specified mana */
         printAddedMana(lowercaseKey)
     }
 }
@@ -504,6 +527,7 @@ class Color {
     }
 }
 
+/** defines a trick and displays it using image() */
 class Trick {
     /*
     Constructor
@@ -523,4 +547,46 @@ class Trick {
         ☐ Set the stroke to White }
         ☐ Draw this.image at (this.xPos, this.yPos)}
      */
+    constructor(image, xPos, yPos, widthOfImage) {
+        this.image = image
+        this.image.resize(widthOfImage, 0)
+        this.xPos = xPos
+        this.yPos = yPos
+        this.show = true
+    }
+
+    /*
+     * Definition: Changes the position to something different
+     * Argument definition:
+     * x → The x position of the new location
+     * y → The y position of the new location
+     * */
+    changePos(x, y) {
+        this.xPos = x
+        this.yPos = y
+    }
+
+    /*
+     * Definition: Sets the card to show or hide
+     * Argument definition:
+     * showOrHide → Tells the trick whether to show or hide:
+     *     True → Tells the trick to show
+     *     False → Tells the trick to hide
+     */
+    setShow(showOrHide) {
+        this.show = showOrHide
+    }
+
+    /*
+     * Definition: Draws the card at this.xPos and this.yPos if this.show is
+     *             true. Use setShow() to set whether the card should show
+     *             or hide and use changePos() to change the position.
+     * Argument definition:
+     * None
+     */
+    draw() {
+        if (this.show) {
+            image(this.image, this.xPos, this.yPos)
+        }
+    }
 }
