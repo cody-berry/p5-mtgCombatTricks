@@ -503,3 +503,24 @@ class Color {
         this.numSelected--
     }
 }
+
+class Trick {
+    /*
+    Constructor
+        ☐ Arguments: Card image, x-position, y-position, width
+        ☐ Set this.image to 'card image'.resize(width, 0)
+        ☐ Set this.xPos to x-position
+        ☐ Set this.yPos to y-position
+        ☐ Set this.show to True
+    changePos(x, y)
+        ☐ Set this.xPos to x
+        ☐ Set this.yPos to y
+    setShow(showOrHide)
+        ☐ Set this.show to showOrHide
+    draw()
+        ☐ If this.show {
+        ☐ If this.hovered {
+        ☐ Set the stroke to White }
+        ☐ Draw this.image at (this.xPos, this.yPos)}
+     */
+}
