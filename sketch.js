@@ -27,8 +27,6 @@ let redColor
 let greenColor
 let colorlessColor
 let availableCardImages = {} // what cards can we cast?
-let testTrick // just a Trick, but for testing purposes. Using W.svg for the
-// card
 let currentCardCMCQueue // this can be useful passing between functions
 
 
@@ -40,7 +38,7 @@ function preload() {
     // retro artifacts might be useful later.
     loadJSON('https://api.scryfall.com/cards/search?q=set:brr', printAndPaginateData)
 
-    // iterate through all the mana symbols
+    // iterate through all the mana symbols and load them
     whiteIcon = loadImage('svg/w.svg')
     blueIcon = loadImage('svg/u.svg')
     blackIcon = loadImage('svg/b.svg')
@@ -65,7 +63,7 @@ function printAndPaginateData(data) {
 }
 
 function setup() {
-    let cnv = createCanvas(700, 12000)
+    let cnv = createCanvas(700, 3000)
     cnv.parent('#canvas')
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
@@ -78,6 +76,7 @@ function setup() {
         w/u/b/r/g/c → Remove 1 White/Blue/Black/Red/Green/Colorless mana
         z → Print all available combat tricks</pre>`)
 
+    // create all the Color functions
     whiteColor = new Color('White', whiteIcon, [59, 25, 95], 50, 50)
     blueColor = new Color('Blue', blueIcon, [192, 40, 93], 120, 50)
     blackColor = new Color('Black', blackIcon, [0, 3, 47], 190, 50)
@@ -85,17 +84,21 @@ function setup() {
     greenColor = new Color('Green', greenIcon, [155, 95, 71], 330, 50)
     colorlessColor = new Color('Colorless', colorlessIcon, [240, 2, 87], 400, 50)
 
-    testTrick = new Trick(whiteIcon, 0, 0, 120)
-
+    // our debug corner
     debugCorner = new CanvasDebugCorner(5)
 }
 
 function filterInstantsAndFlashCards(cards) {
+    // instants and flash cards
     let resultingCardList = []
     for (let card of cards) {
+        // type_line is the type of the card. If it is an Instant, then it
+        // is a combat trick.
         if (card['type_line'] === 'Instant') {
             resultingCardList.push(card)
         }
+        // it may also be a combat trick if the card keywords includes
+        // Flash. For example, in BRO, Zephyr Sentinel or Ambush Paratrooper.
         if (card['keywords'].includes('Flash')) {
             resultingCardList.push(card)
         }
@@ -106,14 +109,16 @@ function filterInstantsAndFlashCards(cards) {
 function draw() {
     background(234, 34, 24)
 
+    cursor(ARROW)
+
+    // formatting: displaying it's mana selection
     fill(100)
     textFont(variableWidthFont)
     stroke(100)
     strokeWeight(0.5)
     text('Mana selection', 4, 25)
 
-    testTrick.draw()
-
+    // draw all the Color classes each frame
     whiteColor.draw()
     blueColor.draw()
     blackColor.draw()
@@ -121,49 +126,58 @@ function draw() {
     greenColor.draw()
     colorlessColor.draw()
 
+    // formatting: split between cards able to be cast and mana symbols
     stroke(100)
-    strokeWeight(3)
-
+    strokeWeight(1.5)
     line(0, 200, 700, 200)
     line(0, 203, 700, 203)
 
     strokeWeight(0.5)
     fill(100)
+
+    // formatting: displaying that the next part is cards able to be cast
     text('Cards able to be cast', 4, 225)
 
-    // let col = 0
-    // let row = 0
-    // for (let cardImage of availableCardImages) {
-    //     col += 1
-    //     if (col > 4) {
-    //         col = 1
-    //         row++
-    //     }
-    //     // card loaded?
-    //     if (cardImage) {
-    //         image(cardImage, -100+col*140, 230+row*230, 120, 200)
-    //     }
-    // }
+    strokeWeight(1.5)
+    line(0, 231, 700, 231)
+    line(80, 231, 80, 40000)
 
+    strokeWeight(0.5)
+
+
+    // used to define the position of the next card
     let col = 0
     let row = 0
+    // useful when drawing the mana symbols
     let travelledRows = 0
+    // iterate through all the card CMCs
     for (let cardCMC in availableCardImages) {
         for (let card of availableCardImages[cardCMC]) {
+            // each card is a new column. the first card is always in column 1.
             col += 1
+            // handles col > 4 so that cards wrap.
             if (col > 4) {
                 col = 1
                 travelledRows++
             }
 
+            // changes the position of the card
             card.changePos(-50 + col*140, 240+(row+travelledRows)*200)
+            // make sure all the tricks are showed
             card.setShow(true)
+            // check if it is hovered
+            card.checkIsHovered()
             card.draw()
         }
 
+        // another travelled row because the row finishes
         travelledRows += 1
+
+        // the translucent rectangle for each card CMC
         fill(0, 0, 100, 32)
         rect(10, 230+(row)*200+5, 70, 230+(row+travelledRows)*200-5)
+
+        // mana symbol: circle + CMC
         fill(50)
         ellipse(40, 225 + 115*travelledRows + row*200, 30)
         fill(100)
@@ -173,6 +187,11 @@ function draw() {
         row += travelledRows
         travelledRows = 0
         col = 0
+
+        // This time around, we make all the card images if they are hovered.
+        for (let card of availableCardImages[cardCMC]) {
+            card.drawBigImage()
+        }
     }
 
     if (frameCount > 30000)
@@ -531,21 +550,12 @@ class Color {
 class Trick {
     /*
     Constructor
-        ☐ Arguments: Card image, x-position, y-position, width
-        ☐ Set this.image to 'card image'.resize(width, 0)
-        ☐ Set this.xPos to x-position
-        ☐ Set this.yPos to y-position
-        ☐ Set this.show to True
-    changePos(x, y)
-        ☐ Set this.xPos to x
-        ☐ Set this.yPos to y
-    setShow(showOrHide)
-        ☐ Set this.show to showOrHide
-    draw()
-        ☐ If this.show {
-        ☐ If this.hovered {
-        ☐ Set the stroke to White }
-        ☐ Draw this.image at (this.xPos, this.yPos)}
+        Definition: Initializes all variables.
+        Argument definition:
+        image → The image of the card.
+        widthOfImage → The width of the resized image.
+        xPos → the current x position of the card.
+        yPos → the current y position of the card.
      */
     constructor(image, xPos, yPos, widthOfImage) {
         this.image = image
@@ -553,6 +563,7 @@ class Trick {
         this.xPos = xPos
         this.yPos = yPos
         this.show = true
+        this.hovered = false
     }
 
     /*
@@ -580,7 +591,9 @@ class Trick {
     /*
      * Definition: Draws the card at this.xPos and this.yPos if this.show is
      *             true. Use setShow() to set whether the card should show
-     *             or hide and use changePos() to change the position.
+     *             or hide and use changePos() to change the position. A
+     *             larger image is displayed on top of the cursor if
+     *             this.hovered is on.
      * Argument definition:
      * None
      */
@@ -588,5 +601,43 @@ class Trick {
         if (this.show) {
             image(this.image, this.xPos, this.yPos)
         }
+    }
+
+    /*
+     * Definition: Draws this.hoverImage centered at mouseX, mouseY.
+     * Argument definition:
+     * None
+     */
+    drawBigImage() {
+        noCursor()
+        if (this.hovered) {
+            image(this.image, mouseX-this.image.width, mouseY-this.image.height, this.image.width*2, this.image.height*2)
+            stroke(0)
+            strokeWeight(1)
+            fill(100)
+            rect(mouseX-4, mouseY-7, mouseX+4, mouseY+7, 3)
+        }
+    }
+
+    /*
+     * Definition: Sets this.hovered to True if this card is hovered.
+     * Argument definition:
+     * None
+     */
+    checkIsHovered() {
+        if (mouseX < this.xPos) {
+            this.hovered = false
+            return
+        } if (mouseX > this.xPos + this.image.width) {
+            this.hovered = false
+            return
+        } if (mouseY < this.yPos) {
+            this.hovered = false
+            return
+        } if (mouseY > this.yPos + this.image.height) {
+            this.hovered = false
+            return
+        }
+        this.hovered = true
     }
 }
