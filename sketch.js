@@ -109,8 +109,6 @@ function filterInstantsAndFlashCards(cards) {
 function draw() {
     background(234, 34, 24)
 
-    cursor(ARROW)
-
     // formatting: displaying it's mana selection
     fill(100)
     textFont(variableWidthFont)
@@ -414,6 +412,53 @@ function printAddedMana(color) {
     }
 }
 
+function mousePressed() {
+    // row of colors y requirements:
+    let lowerBoundY = 50
+    let upperBoundY = 100
+    // row of colors x requirements:
+    let lowerBoundWhiteX = 50
+    let upperBoundWhiteX = 100
+    let lowerBoundBlueX = 120
+    let upperBoundBlueX = 170
+    let lowerBoundBlackX = 190
+    let upperBoundBlackX = 240
+    let lowerBoundRedX = 260
+    let upperBoundRedX = 310
+    let lowerBoundGreenX = 330
+    let upperBoundGreenX = 380
+    let lowerBoundColorlessX = 400
+    let upperBoundColorlessX = 450
+
+    // is it even in the row of colors?
+    if (mouseY > lowerBoundY && mouseY < upperBoundY) {
+        // white
+        if (lowerBoundWhiteX < mouseX && mouseX < upperBoundWhiteX) {
+            printAddedMana('w')
+        }
+        // blue
+        if (lowerBoundBlueX < mouseX && mouseX < upperBoundBlueX) {
+            printAddedMana('u')
+        }
+        // black
+        if (lowerBoundBlackX < mouseX && mouseX < upperBoundBlackX) {
+            printAddedMana('b')
+        }
+        // red
+        if (lowerBoundRedX < mouseX && mouseX < upperBoundRedX) {
+            printAddedMana('r')
+        }
+        // green
+        if (lowerBoundGreenX < mouseX && mouseX < upperBoundGreenX) {
+            printAddedMana('g')
+        }
+        // colorless
+        if (lowerBoundColorlessX < mouseX && mouseX < upperBoundColorlessX) {
+            printAddedMana('c')
+        }
+    }
+}
+
 /** 🧹 shows debugging info using text() 🧹 */
 class CanvasDebugCorner {
     constructor(lines) {
@@ -609,13 +654,8 @@ class Trick {
      * None
      */
     drawBigImage() {
-        noCursor()
         if (this.hovered) {
             image(this.image, mouseX-this.image.width, mouseY-this.image.height, this.image.width*2, this.image.height*2)
-            stroke(0)
-            strokeWeight(1)
-            fill(100)
-            rect(mouseX-4, mouseY-7, mouseX+4, mouseY+7, 3)
         }
     }
 
