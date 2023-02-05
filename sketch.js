@@ -28,6 +28,12 @@ let greenColor
 let colorlessColor
 let availableCardImages = {} // what cards can we cast?
 let currentCardCMCQueue // this can be useful passing between functions
+let raritiesSelected = { // the rarites that have been selected
+    'common': true,
+    'uncommon': true,
+    'rare': true,
+    'mythic': true
+}
 
 
 function preload() {
@@ -72,8 +78,8 @@ function setup() {
     instructions = select('#ins')
     instructions.html(`<pre>
         numpad 1 → freeze sketch
-        W/U/B/R/G/C → Add 1 White/Blue/Black/Red/Green/Colorless mana
-        w/u/b/r/g/c → Remove 1 White/Blue/Black/Red/Green/Colorless mana
+        W, U, B, R, G, C, or click on symbol → Add 1 White/Blue/Black/Red/Green/Colorless mana
+        w, u, b, r, g, or c → Remove 1 White/Blue/Black/Red/Green/Colorless mana
         z → Print all available combat tricks</pre>`)
 
     // create all the Color functions
@@ -124,9 +130,46 @@ function draw() {
     greenColor.draw()
     colorlessColor.draw()
 
-    // formatting: split between cards able to be cast and mana symbols
+    // formatting: split between mana and rarities
     stroke(100)
-    strokeWeight(1.5)
+    strokeWeight(3)
+
+    line(472, 0, 472, 203)
+    line(475, 0, 475, 203)
+
+    // formatting: saying that it's rarity selection section
+    fill(100)
+    textFont(variableWidthFont)
+    stroke(100)
+    strokeWeight(0.5)
+    text('Rarity selection', 490, 25)
+
+    // common
+    fill(240, 10, 50)
+    if (!raritiesSelected['common']) {
+        fill(240, 12, 30)
+    }
+    noStroke()
+    rect(500, 50, 550, 100)
+    fill(60, 10, 70)
+    textSize(30)
+    text('C', 514, 86)
+
+    // uncommon
+    fill(240, 8, 100)
+    if (!raritiesSelected['uncommon']) {
+        fill(240, 8, 80)
+    }
+    rect(600, 50, 650, 100)
+    fill(60, 8, 40)
+    text('U', 614, 86)
+
+    textSize(14)
+
+    // formatting: split between cards able to be cast and mana symbols
+    fill(100)
+    stroke(100)
+    strokeWeight(3)
     line(0, 200, 700, 200)
     line(0, 203, 700, 203)
 
@@ -136,12 +179,11 @@ function draw() {
     // formatting: displaying that the next part is cards able to be cast
     text('Cards able to be cast', 4, 225)
 
-    strokeWeight(1.5)
+    strokeWeight(3)
     line(0, 231, 700, 231)
+    strokeWeight(2)
     line(80, 231, 80, 40000)
-
     strokeWeight(0.5)
-
 
     // used to define the position of the next card
     let col = 0
@@ -199,7 +241,7 @@ function draw() {
 
     /* debugCorner needs to be last so its z-index is highest */
     debugCorner.setText(`frameCount: ${frameCount}`, 2)
-    debugCorner.setText(`fps: ${frameRate().toFixed(1)}`, 1)
+    debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
     debugCorner.showBottom()
 }
 
@@ -417,18 +459,18 @@ function mousePressed() {
     let lowerBoundY = 50
     let upperBoundY = 100
     // row of colors x requirements:
-    let lowerBoundWhiteX = 50
-    let upperBoundWhiteX = 100
-    let lowerBoundBlueX = 120
-    let upperBoundBlueX = 170
-    let lowerBoundBlackX = 190
-    let upperBoundBlackX = 240
-    let lowerBoundRedX = 260
-    let upperBoundRedX = 310
-    let lowerBoundGreenX = 330
-    let upperBoundGreenX = 380
-    let lowerBoundColorlessX = 400
-    let upperBoundColorlessX = 450
+    let lowerBoundWhiteX = whiteColor.xPosition
+    let upperBoundWhiteX = whiteColor.xPosition + 50
+    let lowerBoundBlueX = blueColor.xPosition
+    let upperBoundBlueX = blueColor.xPosition + 50
+    let lowerBoundBlackX = blackColor.xPosition
+    let upperBoundBlackX = blackColor.xPosition + 50
+    let lowerBoundRedX = redColor.xPosition
+    let upperBoundRedX = redColor.xPosition + 50
+    let lowerBoundGreenX = greenColor.xPosition
+    let upperBoundGreenX = greenColor.xPosition + 50
+    let lowerBoundColorlessX = colorlessColor.xPosition
+    let upperBoundColorlessX = colorlessColor.xPosition + 50
 
     // is it even in the row of colors?
     if (mouseY > lowerBoundY && mouseY < upperBoundY) {
@@ -455,6 +497,28 @@ function mousePressed() {
         // colorless
         if (lowerBoundColorlessX < mouseX && mouseX < upperBoundColorlessX) {
             printAddedMana('c')
+        }
+    }
+
+    // rarities!
+    let lowerBoundCommonAndUncommonY = 50
+    let upperBoundCommonAndUncommonY = 100
+    let lowerBoundRareAndMythicY = 150
+    let upperBoundRareAndMythicY = 200
+    let lowerBoundCommonAndRareX = 500
+    let upperBoundCommonAndRareX = 550
+    let lowerBoundUncommonAndMythicX = 600
+    let upperBoundUncommonAndMythicX = 650
+
+    // elimination: eliminated Rare and Mythic. left with Uncommon and Common
+    if (lowerBoundCommonAndUncommonY < mouseY && mouseY < upperBoundCommonAndUncommonY) {
+        // elimination: eliminated Uncommon. left with only Common
+        if (lowerBoundCommonAndRareX < mouseX && mouseX < upperBoundCommonAndRareX) {
+            raritiesSelected['common'] = !raritiesSelected['common']
+        }
+        // elimination: eliminated Common. Left with only Uncommon
+        if (lowerBoundUncommonAndMythicX < mouseX && mouseX < upperBoundUncommonAndMythicX) {
+            raritiesSelected['uncommon'] = !raritiesSelected['uncommon']
         }
     }
 }
