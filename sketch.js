@@ -10,7 +10,7 @@ let variableWidthFont
 let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 // scryfall data url; BRO (the BROther's War)
-let url='https://api.scryfall.com/cards/search?q=set:bro'
+let url='https://api.scryfall.com/cards/search?q=set:one'
 let cards=[] /* data for the cards */
 let mana = [0,0,0,0,0,0] /* mana in WUBRG order, then colorless mana */
 let whiteIcon
@@ -22,7 +22,6 @@ let colorlessIcon
 let phyrexianIcon
 let whiteColor
 let blueColor
-let blackColor
 let redColor
 let greenColor
 let colorlessColor
@@ -42,7 +41,7 @@ function preload() {
     variableWidthFont = loadFont('data/meiryo.ttf')
     loadJSON(url, printAndPaginateData)
     // retro artifacts might be useful later.
-    loadJSON('https://api.scryfall.com/cards/search?q=set:brr', printAndPaginateData)
+    // loadJSON('https://api.scryfall.com/cards/search?q=set:brr', printAndPaginateData)
 
     // iterate through all the mana symbols and load them
     whiteIcon = loadImage('svg/w.svg')
@@ -163,6 +162,24 @@ function draw() {
     rect(600, 50, 650, 100)
     fill(60, 8, 40)
     text('U', 614, 86)
+
+    // rare
+    fill(51, 45, 90)
+    if (!raritiesSelected['rare']) {
+        fill(51, 45, 60)
+    }
+    rect(500, 125, 550, 175)
+    fill(51, 100, 35)
+    text('R', 514, 161)
+
+    // mythic
+    fill(35, 57, 100)
+    if (!raritiesSelected['mythic']) {
+        fill(35, 57, 60)
+    }
+    rect(600, 125, 650, 175)
+    fill(35, 100, 36)
+    text('M', 614, 161)
 
     textSize(14)
 
@@ -503,8 +520,8 @@ function mousePressed() {
     // rarities!
     let lowerBoundCommonAndUncommonY = 50
     let upperBoundCommonAndUncommonY = 100
-    let lowerBoundRareAndMythicY = 150
-    let upperBoundRareAndMythicY = 200
+    let lowerBoundRareAndMythicY = 125
+    let upperBoundRareAndMythicY = 175
     let lowerBoundCommonAndRareX = 500
     let upperBoundCommonAndRareX = 550
     let lowerBoundUncommonAndMythicX = 600
