@@ -538,6 +538,17 @@ function mousePressed() {
             raritiesSelected['uncommon'] = !raritiesSelected['uncommon']
         }
     }
+    // elimination: eliminated common and uncommon. left with Rare and Mythic
+    if (lowerBoundRareAndMythicY < mouseY && mouseY < upperBoundRareAndMythicY) {
+        // elimination: eliminated Mythic. left with only Rare
+        if (lowerBoundCommonAndRareX < mouseX && mouseX < upperBoundCommonAndRareX) {
+            raritiesSelected['rare'] = !raritiesSelected['rare']
+        }
+        // elimination: eliminated Rare. Left with only Mythic
+        if (lowerBoundUncommonAndMythicX < mouseX && mouseX < upperBoundUncommonAndMythicX) {
+            raritiesSelected['mythic'] = !raritiesSelected['mythic']
+        }
+    }
 }
 
 /** 🧹 shows debugging info using text() 🧹 */
