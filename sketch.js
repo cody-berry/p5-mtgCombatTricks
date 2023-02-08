@@ -271,7 +271,8 @@ function storeAvailableCards() {
     for (let card of cards) {
         let cardCMC = card['cmc']
         currentCardCMCQueue.push(cardCMC)
-        if (cardCMC > sum(mana)) {
+        if (cardCMC > sum(mana) || /* the rarity could sometimes not be
+         selected!*/ !raritiesSelected[card['rarity']]) {
         } else {
             let cardCost = card['mana_cost']
             let manaMinusUsed = {
