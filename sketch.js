@@ -270,7 +270,6 @@ function storeAvailableCards() {
     // append Tricks correctly.
     for (let card of cards) {
         let cardCMC = card['cmc']
-        currentCardCMCQueue.push(cardCMC)
         if (cardCMC > sum(mana) || /* the rarity could sometimes not be
          selected!*/ !raritiesSelected[card['rarity']]) {
         } else {
@@ -295,6 +294,7 @@ function storeAvailableCards() {
                 }
             }
             if (!cannotCastCard) {
+                currentCardCMCQueue.push(cardCMC)
                 loadImage(card['image_uris']['png'], addCardToImages)
             }
         }
@@ -310,6 +310,8 @@ function addCardToImages(cardImage) {
     // in storeAvailableCards, I used a currentCardCMCQueue. This didn't
     // work out properly.
     let cardCMC = currentCardCMCQueue[0]
+    currentCardCMCQueue = currentCardCMCQueue.slice(1)
+    print(currentCardCMCQueue)
     if (availableCardImages[cardCMC]) {
         availableCardImages[cardCMC].push(newTrick)
     } else {
