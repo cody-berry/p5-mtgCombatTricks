@@ -26,7 +26,6 @@ let redColor
 let greenColor
 let colorlessColor
 let availableCardImages = {} // what cards can we cast?
-let currentCardCMCQueue // this can be useful passing between functions
 let raritiesSelected = { // the rarites that have been selected
     'common': true,
     'uncommon': true,
@@ -266,8 +265,6 @@ function draw() {
 function storeAvailableCards() {
     availableCardImages = {} // the available cards in a dictionary with
     // keys of cmc's and values of a list of card images
-    currentCardCMCQueue = [] // right now I'm figuring out an algorithm to
-    // append Tricks correctly.
     for (let card of cards) {
         let cardCMC = card['cmc']
         if (cardCMC > sum(mana) || /* the rarity could sometimes not be
@@ -294,8 +291,19 @@ function storeAvailableCards() {
                 }
             }
             if (!cannotCastCard) {
-                currentCardCMCQueue.push(cardCMC)
-                loadImage(card['image_uris']['png'], addCardToImages)
+                loadImage(card['image_uris']['png'],
+                    data => {
+                        // the Trick for displaying
+                        let newTrick = new Trick(data, 0, 0, 120)
+                        newTrick.setShow(false)
+
+                        // in storeAvailableCards, I used a currentCardCMCQueue. This didn't
+                        // work out properly.
+                        if (availableCardImages[cardCMC]) {
+                            availableCardImages[cardCMC].push(newTrick)
+                        } else {
+                            availableCardImages[cardCMC] = [newTrick]
+                        }})
             }
         }
     }
@@ -303,20 +311,7 @@ function storeAvailableCards() {
 }
 
 function addCardToImages(cardImage) {
-    // the Trick for displaying
-    let newTrick = new Trick(cardImage, 0, 0, 120)
-    newTrick.setShow(false)
 
-    // in storeAvailableCards, I used a currentCardCMCQueue. This didn't
-    // work out properly.
-    let cardCMC = currentCardCMCQueue[0]
-    currentCardCMCQueue = currentCardCMCQueue.slice(1)
-    print(currentCardCMCQueue)
-    if (availableCardImages[cardCMC]) {
-        availableCardImages[cardCMC].push(newTrick)
-    } else {
-        availableCardImages[cardCMC] = [newTrick]
-    }
 }
 
 // isn't it nice to have a sum function?
