@@ -197,8 +197,6 @@ function draw() {
 
     strokeWeight(3)
     line(0, 231, 700, 231)
-    strokeWeight(2)
-    line(80, 231, 80, 40000)
     strokeWeight(0.5)
 
     // used to define the position of the next card
@@ -231,7 +229,9 @@ function draw() {
 
         // the translucent rectangle for each card CMC
         fill(0, 0, 100, 32)
-        rect(10, 230+(row)*200+5, 70, 230+(row+travelledRows)*200-5)
+        noStroke()
+        rect(-10, 230+(row)*200+5, 7000, 230+(row+travelledRows)*200-15)
+        strokeWeight(0.5)
 
         // mana symbol: circle + CMC
         fill(50)
@@ -263,8 +263,15 @@ function draw() {
 
 // Who knows what you can or cannot cast without a function?
 function storeAvailableCards() {
-    availableCardImages = {} // the available cards in a dictionary with
+    availableCardImages = {
+        1: [],
+        2: [],
+        3: [],
+        4: [],
+        5: [],
+    } // the available cards in a dictionary with
     // keys of cmc's and values of a list of card images
+    maxCardCMC = 1
     for (let card of cards) {
         let cardCMC = card['cmc']
         if (cardCMC > sum(mana) || /* the rarity could sometimes not be
@@ -304,7 +311,15 @@ function storeAvailableCards() {
                         } else {
                             availableCardImages[cardCMC] = [newTrick]
                         }})
+                if (maxCardCMC < cardCMC) {
+                    maxCardCMC = cardCMC
+                }
             }
+        }
+    }
+    if (maxCardCMC < 5) {
+        for (let i = maxCardCMC + 1; i < 6; i++) {
+            delete availableCardImages[i]
         }
     }
     return availableCardImages
