@@ -82,11 +82,11 @@ function setup() {
 
     // create all the Color functions
     whiteColor = new Color('White', whiteIcon, [59, 25, 95], 50, 50)
-    blueColor = new Color('Blue', blueIcon, [192, 40, 93], 120, 50)
-    blackColor = new Color('Black', blackIcon, [0, 3, 47], 190, 50)
-    redColor = new Color('Red', redIcon, [5, 70, 84], 260, 50)
-    greenColor = new Color('Green', greenIcon, [155, 95, 71], 330, 50)
-    colorlessColor = new Color('Colorless', colorlessIcon, [240, 2, 87], 400, 50)
+    blueColor = new Color('Blue', blueIcon, [192, 40, 93], 100, 50)
+    blackColor = new Color('Black', blackIcon, [0, 3, 47], 150, 50)
+    redColor = new Color('Red', redIcon, [5, 70, 84], 200, 50)
+    greenColor = new Color('Green', greenIcon, [155, 95, 71], 250, 50)
+    colorlessColor = new Color('Colorless', colorlessIcon, [240, 2, 87], 300, 50)
 
     // our debug corner
     debugCorner = new CanvasDebugCorner(5)
@@ -129,11 +129,8 @@ function draw() {
     colorlessColor.draw()
 
     // formatting: split between mana and rarities
-    stroke(100)
-    strokeWeight(3)
-
-    line(472, 0, 472, 203)
-    line(475, 0, 475, 203)
+    fill(237, 37, 20)
+    rect(470, 0, 480, 200)
 
     // formatting: saying that it's rarity selection section
     fill(100)
@@ -183,11 +180,8 @@ function draw() {
     textSize(14)
 
     // formatting: split between cards able to be cast and mana symbols
-    fill(100)
-    stroke(100)
-    strokeWeight(3)
-    line(0, 200, 700, 200)
-    line(0, 203, 700, 203)
+    fill(237, 37, 20)
+    rect(0, 195, 700, 205)
 
     strokeWeight(0.5)
     fill(100)
@@ -195,55 +189,48 @@ function draw() {
     // formatting: displaying that the next part is cards able to be cast
     text('Cards able to be cast', 4, 225)
 
-    strokeWeight(3)
-    line(0, 231, 700, 231)
-    strokeWeight(0.5)
+    noStroke()
+    fill(237, 37, 20)
+    rect(0, 229, 700, 233)
 
     // used to define the position of the next card
     let col = 0
     let row = 0
-    // useful when drawing the mana symbols
-    let travelledRows = 0
     // iterate through all the card CMCs
     for (let cardCMC in availableCardImages) {
+        // mana symbol: circle + CMC
+        fill(50)
+        ellipse(40, 260 + row*200, 30)
+        fill(100)
+        stroke(100)
+        textAlign(CENTER)
+        text(cardCMC, 40, 265 + row*200)
+        col = 0
+
         for (let card of availableCardImages[cardCMC]) {
             // each card is a new column. the first card is always in column 1.
             col += 1
             // handles col > 4 so that cards wrap.
             if (col > 4) {
                 col = 1
-                travelledRows++
+                row++
             }
 
             // changes the position of the card
-            card.changePos(-50 + col*140, 240+(row+travelledRows)*200)
+            card.changePos(-50 + col*140, 240+(row)*200)
             // make sure all the tricks are showed
             card.setShow(true)
             // check if it is hovered
             card.checkIsHovered()
             card.draw()
         }
+        row++
 
-        // another travelled row because the row finishes
-        travelledRows += 1
-
-        // the translucent rectangle for each card CMC
-        fill(0, 0, 100, 32)
         noStroke()
-        rect(-10, 230+(row)*200+5, 7000, 230+(row+travelledRows)*200-15)
+        fill(237, 37, 20)
+        rect(-10, 225+row*200, 800, 235+row*200)
+
         strokeWeight(0.5)
-
-        // mana symbol: circle + CMC
-        fill(50)
-        ellipse(40, 225 + 115*travelledRows + row*200, 30)
-        fill(100)
-        stroke(100)
-        textAlign(CENTER)
-        text(cardCMC, 40, 230 + 115*travelledRows + row*200)
-        row += travelledRows
-        travelledRows = 0
-        col = 0
-
         // This time around, we make all the card images if they are hovered.
         for (let card of availableCardImages[cardCMC]) {
             card.drawBigImage()
@@ -263,15 +250,8 @@ function draw() {
 
 // Who knows what you can or cannot cast without a function?
 function storeAvailableCards() {
-    availableCardImages = {
-        1: [],
-        2: [],
-        3: [],
-        4: [],
-        5: [],
-    } // the available cards in a dictionary with
-    // keys of cmc's and values of a list of card images
-    maxCardCMC = 1
+    availableCardImages = {} // the available cards in a dictionary with keys
+                             // of cmc's and values of a list of card images
     for (let card of cards) {
         let cardCMC = card['cmc']
         if (cardCMC > sum(mana) || /* the rarity could sometimes not be
@@ -311,22 +291,10 @@ function storeAvailableCards() {
                         } else {
                             availableCardImages[cardCMC] = [newTrick]
                         }})
-                if (maxCardCMC < cardCMC) {
-                    maxCardCMC = cardCMC
-                }
             }
         }
     }
-    if (maxCardCMC < 5) {
-        for (let i = maxCardCMC + 1; i < 6; i++) {
-            delete availableCardImages[i]
-        }
-    }
     return availableCardImages
-}
-
-function addCardToImages(cardImage) {
-
 }
 
 // isn't it nice to have a sum function?
@@ -490,17 +458,17 @@ function mousePressed() {
     let upperBoundY = 100
     // row of colors x requirements:
     let lowerBoundWhiteX = whiteColor.xPosition
-    let upperBoundWhiteX = whiteColor.xPosition + 50
+    let upperBoundWhiteX = whiteColor.xPosition + 35
     let lowerBoundBlueX = blueColor.xPosition
-    let upperBoundBlueX = blueColor.xPosition + 50
+    let upperBoundBlueX = blueColor.xPosition + 35
     let lowerBoundBlackX = blackColor.xPosition
-    let upperBoundBlackX = blackColor.xPosition + 50
+    let upperBoundBlackX = blackColor.xPosition + 35
     let lowerBoundRedX = redColor.xPosition
-    let upperBoundRedX = redColor.xPosition + 50
+    let upperBoundRedX = redColor.xPosition + 35
     let lowerBoundGreenX = greenColor.xPosition
-    let upperBoundGreenX = greenColor.xPosition + 50
+    let upperBoundGreenX = greenColor.xPosition + 35
     let lowerBoundColorlessX = colorlessColor.xPosition
-    let upperBoundColorlessX = colorlessColor.xPosition + 50
+    let upperBoundColorlessX = colorlessColor.xPosition + 35
 
     // is it even in the row of colors?
     if (mouseY > lowerBoundY && mouseY < upperBoundY) {
@@ -673,15 +641,15 @@ class Color {
         stroke(this.color[0], this.color[1], this.color[2])
         noFill()
         strokeWeight(2)
-        rect(this.xPosition-3, this.yPosition-3, this.xPosition+53, this.yPosition+53)
+        rect(this.xPosition-3, this.yPosition-3, this.xPosition+38, this.yPosition+38)
 
         tint(this.color[0], this.color[1], this.color[2])
-        image(this.colorSVGFile, this.xPosition, this.yPosition, 50, 50)
+        image(this.colorSVGFile, this.xPosition, this.yPosition, 35, 35)
 
         noStroke()
         fill(this.color[0], this.color[1], this.color[2])
         for (let i = 0; i < this.numSelected; i++) {
-            rect(this.xPosition-3, this.yPosition + 60 + i*10, this.xPosition+53, this.yPosition+64 + i*10, 2)
+            rect(this.xPosition-3, this.yPosition + 50 + i*10, this.xPosition+38, this.yPosition+45 + i*10, 2)
         }
     }
 
