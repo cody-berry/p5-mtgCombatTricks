@@ -501,7 +501,15 @@ function mousePressed() {
 
     // rarities!
     if (50 < mouseY && mouseY < 100) {
-
+        if (375 < mouseX && mouseX < 410) {
+            raritiesSelected['common'] = !raritiesSelected['common']
+        } if (420 < mouseX && mouseX < 455) {
+            raritiesSelected['uncommon'] = !raritiesSelected['uncommon']
+        } if (465 < mouseX && mouseX < 500) {
+            raritiesSelected['rare'] = !raritiesSelected['rare']
+        } if (510 < mouseX && mouseX < 545) {
+            raritiesSelected['mythic'] = !raritiesSelected['mythic']
+        }
     }
 }
 
