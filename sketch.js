@@ -130,14 +130,14 @@ function draw() {
 
     // formatting: split between mana and rarities
     fill(237, 37, 20)
-    rect(470, 0, 480, 200)
+    rect(345, 0, 355, 200)
 
     // formatting: saying that it's rarity selection section
     fill(100)
     textFont(variableWidthFont)
     stroke(100)
     strokeWeight(0.5)
-    text('Rarity selection', 490, 25)
+    text('Rarity selection', 360, 25)
 
     // common
     fill(240, 10, 50)
@@ -145,43 +145,46 @@ function draw() {
         fill(240, 12, 30)
     }
     noStroke()
-    rect(500, 50, 550, 100)
+    rect(375, 50, 410, 85)
     fill(60, 10, 70)
-    textSize(30)
-    text('C', 514, 86)
+    textSize(20)
+    text('C', 385, 75)
 
     // uncommon
     fill(240, 8, 100)
     if (!raritiesSelected['uncommon']) {
         fill(240, 8, 80)
     }
-    rect(600, 50, 650, 100)
+    rect(420, 50, 455, 85)
     fill(60, 8, 40)
-    text('U', 614, 86)
+    text('U', 430, 75)
 
     // rare
     fill(51, 45, 90)
     if (!raritiesSelected['rare']) {
         fill(51, 45, 60)
     }
-    rect(500, 125, 550, 175)
+    rect(465, 50, 500, 85)
     fill(51, 100, 35)
-    text('R', 514, 161)
+    text('R', 475, 75)
 
     // mythic
     fill(35, 57, 100)
     if (!raritiesSelected['mythic']) {
         fill(35, 57, 60)
     }
-    rect(600, 125, 650, 175)
+    rect(510, 50, 545, 85)
     fill(35, 100, 36)
-    text('M', 614, 161)
+    text('M', 520, 75)
 
     textSize(14)
 
     // formatting: split between cards able to be cast and mana symbols
     fill(237, 37, 20)
     rect(0, 195, 700, 205)
+    rect(350, 100, 700, 200)
+    rect(560, 0, 800, 200)
+    rect(0, 40, 30, 200)
 
     strokeWeight(0.5)
     fill(100)
@@ -192,6 +195,7 @@ function draw() {
     noStroke()
     fill(237, 37, 20)
     rect(0, 229, 700, 233)
+    rect(160, 200, 800, 233)
 
     // used to define the position of the next card
     let col = 0
@@ -453,9 +457,6 @@ function printAddedMana(color) {
 }
 
 function mousePressed() {
-    // row of colors y requirements:
-    let lowerBoundY = 50
-    let upperBoundY = 100
     // row of colors x requirements:
     let lowerBoundWhiteX = whiteColor.xPosition
     let upperBoundWhiteX = whiteColor.xPosition + 35
@@ -471,7 +472,7 @@ function mousePressed() {
     let upperBoundColorlessX = colorlessColor.xPosition + 35
 
     // is it even in the row of colors?
-    if (mouseY > lowerBoundY && mouseY < upperBoundY) {
+    if (50 < mouseY && mouseY < 100) {
         // white
         if (lowerBoundWhiteX < mouseX && mouseX < upperBoundWhiteX) {
             printAddedMana('w')
@@ -499,36 +500,8 @@ function mousePressed() {
     }
 
     // rarities!
-    let lowerBoundCommonAndUncommonY = 50
-    let upperBoundCommonAndUncommonY = 100
-    let lowerBoundRareAndMythicY = 125
-    let upperBoundRareAndMythicY = 175
-    let lowerBoundCommonAndRareX = 500
-    let upperBoundCommonAndRareX = 550
-    let lowerBoundUncommonAndMythicX = 600
-    let upperBoundUncommonAndMythicX = 650
+    if (50 < mouseY && mouseY < 100) {
 
-    // elimination: eliminated Rare and Mythic. left with Uncommon and Common
-    if (lowerBoundCommonAndUncommonY < mouseY && mouseY < upperBoundCommonAndUncommonY) {
-        // elimination: eliminated Uncommon. left with only Common
-        if (lowerBoundCommonAndRareX < mouseX && mouseX < upperBoundCommonAndRareX) {
-            raritiesSelected['common'] = !raritiesSelected['common']
-        }
-        // elimination: eliminated Common. Left with only Uncommon
-        if (lowerBoundUncommonAndMythicX < mouseX && mouseX < upperBoundUncommonAndMythicX) {
-            raritiesSelected['uncommon'] = !raritiesSelected['uncommon']
-        }
-    }
-    // elimination: eliminated common and uncommon. left with Rare and Mythic
-    if (lowerBoundRareAndMythicY < mouseY && mouseY < upperBoundRareAndMythicY) {
-        // elimination: eliminated Mythic. left with only Rare
-        if (lowerBoundCommonAndRareX < mouseX && mouseX < upperBoundCommonAndRareX) {
-            raritiesSelected['rare'] = !raritiesSelected['rare']
-        }
-        // elimination: eliminated Rare. Left with only Mythic
-        if (lowerBoundUncommonAndMythicX < mouseX && mouseX < upperBoundUncommonAndMythicX) {
-            raritiesSelected['mythic'] = !raritiesSelected['mythic']
-        }
     }
 }
 
