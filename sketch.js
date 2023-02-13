@@ -218,6 +218,9 @@ function draw() {
             if (col > 4) {
                 col = 1
                 row++
+                fill(237, 37, 20)
+                noStroke()
+                rect(0, 223 + row*200, 800, 217 + row*200)
             }
 
             // changes the position of the card
@@ -227,6 +230,10 @@ function draw() {
             // check if it is hovered
             card.checkIsHovered()
             card.draw()
+
+            fill(237, 37, 20)
+            noStroke()
+            rect(-64 + col*140, 230+(row)*200, -58 + col*140, 430 + (row)*200)
         }
         row++
 
