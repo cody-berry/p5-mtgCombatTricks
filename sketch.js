@@ -191,7 +191,6 @@ function draw() {
 
     // formatting: displaying that the next part is cards able to be cast
     text('Cards able to be cast', 4, 225)
-git
     noStroke()
     fill(237, 37, 20)
     rect(0, 229, 700, 233)
@@ -200,14 +199,17 @@ git
     // how wide is a column, and how high is a row?
     let colWidth = 125
     let rowHeight = 172
+
     // the space between card CMCs and the number of the spaces between card
     // CMCs we have. otherwise a card will eventually overlap with the
     // spacing between.
     let cardCMCs = 0
     let cardCMCSpacingHeight = 17
+
     // used to define the position of the next card
     let col = 0
     let row = 0
+
     // iterate through all the card CMCs
     for (let cardCMC in availableCardImages) {
         // mana symbol: circle + CMC
@@ -222,6 +224,7 @@ git
         for (let card of availableCardImages[cardCMC]) {
             // each card is a new column. the first card is always in column 1.
             col += 1
+
             // handles col > 4 so that cards wrap so that you can only have
             // values of 1, 2, 3, or 4.
             if (col > 4) {
@@ -231,10 +234,11 @@ git
 
             // changes the position of the card
             card.changePos(-50 + col*colWidth, 240+(row)*rowHeight + cardCMCs*cardCMCSpacingHeight)
+
             // make sure all the tricks are showed
             card.setShow(true)
+
             // check if it is hovered
-            card.checkIsHovered()
             card.draw()
         }
         row++
@@ -243,11 +247,16 @@ git
         noStroke()
         fill(237, 37, 20)
         rect(-10, 225+row*rowHeight + cardCMCs*cardCMCSpacingHeight, 800, 235+row*rowHeight + cardCMCs*cardCMCSpacingHeight)
+    }
 
-        strokeWeight(0.5)
-        // This time around, we make all the card images if they are hovered.
-        for (let card of availableCardImages[cardCMC]) {
-            card.drawBigImage()
+    // now we have to find what card is overed over if there is. to do this
+    // we iterate through all the values of availableCardImages and figure out
+    // if they are hovered and draw the big image if so.
+    for (let cardCMC in availableCardImages) {
+        for (let trick of availableCardImages[cardCMC]) {
+            trick.checkIsHovered()
+            strokeWeight(0.5)
+            trick.drawBigImage()
         }
     }
 
@@ -279,6 +288,7 @@ function storeAvailableCards() {
                 'R': mana[3], // mana[3] = red mana
                 'G': mana[4]  // mana[4] = green mana
             } // colorless mana is not included because we ignore numbers
+
             let cannotCastCard = false
             for (let char of cardCost) {
                 if (!['X', '1', '2', '3',
