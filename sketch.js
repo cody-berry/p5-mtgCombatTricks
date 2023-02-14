@@ -191,12 +191,20 @@ function draw() {
 
     // formatting: displaying that the next part is cards able to be cast
     text('Cards able to be cast', 4, 225)
-
+git
     noStroke()
     fill(237, 37, 20)
     rect(0, 229, 700, 233)
     rect(160, 200, 800, 233)
 
+    // how wide is a column, and how high is a row?
+    let colWidth = 125
+    let rowHeight = 172
+    // the space between card CMCs and the number of the spaces between card
+    // CMCs we have. otherwise a card will eventually overlap with the
+    // spacing between.
+    let cardCMCs = 0
+    let cardCMCSpacingHeight = 17
     // used to define the position of the next card
     let col = 0
     let row = 0
@@ -204,42 +212,37 @@ function draw() {
     for (let cardCMC in availableCardImages) {
         // mana symbol: circle + CMC
         fill(50)
-        ellipse(40, 260 + row*200, 30)
+        ellipse(40, 260 + row*rowHeight + cardCMCs*cardCMCSpacingHeight, 30)
         fill(100)
         stroke(100)
         textAlign(CENTER)
-        text(cardCMC, 40, 265 + row*200)
+        text(cardCMC, 40, 265 + row*rowHeight + cardCMCs*cardCMCSpacingHeight)
         col = 0
 
         for (let card of availableCardImages[cardCMC]) {
             // each card is a new column. the first card is always in column 1.
             col += 1
-            // handles col > 4 so that cards wrap.
+            // handles col > 4 so that cards wrap so that you can only have
+            // values of 1, 2, 3, or 4.
             if (col > 4) {
                 col = 1
                 row++
-                fill(237, 37, 20)
-                noStroke()
-                rect(0, 223 + row*200, 800, 217 + row*200)
             }
 
             // changes the position of the card
-            card.changePos(-50 + col*140, 240+(row)*200)
+            card.changePos(-50 + col*colWidth, 240+(row)*rowHeight + cardCMCs*cardCMCSpacingHeight)
             // make sure all the tricks are showed
             card.setShow(true)
             // check if it is hovered
             card.checkIsHovered()
             card.draw()
-
-            fill(237, 37, 20)
-            noStroke()
-            rect(-64 + col*140, 230+(row)*200, -58 + col*140, 430 + (row)*200)
         }
         row++
+        cardCMCs++
 
         noStroke()
         fill(237, 37, 20)
-        rect(-10, 225+row*200, 800, 235+row*200)
+        rect(-10, 225+row*rowHeight + cardCMCs*cardCMCSpacingHeight, 800, 235+row*rowHeight + cardCMCs*cardCMCSpacingHeight)
 
         strokeWeight(0.5)
         // This time around, we make all the card images if they are hovered.
