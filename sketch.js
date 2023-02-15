@@ -255,7 +255,6 @@ function draw() {
     for (let cardCMC in availableCardImages) {
         for (let trick of availableCardImages[cardCMC]) {
             trick.checkIsHovered()
-            strokeWeight(0.5)
             trick.drawBigImage()
         }
     }
@@ -276,8 +275,30 @@ function storeAvailableCards() {
     availableCardImages = {} // the available cards in a dictionary with keys
                              // of cmc's and values of a list of card images
     for (let card of cards) {
+        let genericManaOmitted = 0
         let cardCMC = card['cmc']
-        if (cardCMC > sum(mana) || /* the rarity could sometimes not be
+        // if 'This spell costs' and 'less to cast' are in the string...
+        let thisSpellCostsIndex = card['oracle_text'].indexOf(
+            'This spell costs')
+        if (thisSpellCostsIndex !== -1) {
+            let lessToCastIndex = card['oracle_text'].indexOf('less to cast')
+
+            if (lessToCastIndex !== -1) {
+                // We iterate through the mana cost. If it can be translated
+                // to a number, we break from the loop and set it to
+                // genericMana if it is not an X.
+                for (let char of card['mana_cost']) {
+                    print(char)
+                    if (char !== 'X' && char !== '{' && char !== '}') {
+                        genericManaOmitted = char*1
+                        break
+                    }
+                }
+            }
+        }
+
+        if (cardCMC - genericManaOmitted > sum(mana) || /* the rarity could
+         sometimes not be
          selected!*/ !raritiesSelected[card['rarity']]) {
         } else {
             let cardCost = card['mana_cost']
@@ -304,17 +325,21 @@ function storeAvailableCards() {
             if (!cannotCastCard) {
                 loadImage(card['image_uris']['png'],
                     data => {
-                        // the Trick for displaying
-                        let newTrick = new Trick(data, 0, 0, 120)
-                        newTrick.setShow(false)
+                        loadImage(card['image_uris']['png'], data2 => {
+                            // the Trick for displaying
+                            let newTrick = new Trick(data, 0, 0, 120, data2)
+                            newTrick.setShow(false)
 
-                        // in storeAvailableCards, I used a currentCardCMCQueue. This didn't
-                        // work out properly.
-                        if (availableCardImages[cardCMC]) {
-                            availableCardImages[cardCMC].push(newTrick)
-                        } else {
-                            availableCardImages[cardCMC] = [newTrick]
-                        }})
+                            print(cardCMC, card['name'], genericManaOmitted)
+
+                            // in storeAvailableCards, I used a currentCardCMCQueue. This didn't
+                            // work out properly.
+                            if (availableCardImages[cardCMC - genericManaOmitted]) {
+                                availableCardImages[cardCMC - genericManaOmitted].push(newTrick)
+                            } else {
+                                availableCardImages[cardCMC - genericManaOmitted] = [newTrick]
+                            }})
+                        })
             }
         }
     }
@@ -676,9 +701,11 @@ class Trick {
         xPos → the current x position of the card.
         yPos → the current y position of the card.
      */
-    constructor(image, xPos, yPos, widthOfImage) {
+    constructor(image, xPos, yPos, widthOfImage, hoverImage) {
         this.image = image
         this.image.resize(widthOfImage, 0)
+        this.hoverImage = hoverImage
+        this.hoverImage.resize(widthOfImage*3, 0)
         this.xPos = xPos
         this.yPos = yPos
         this.show = true
@@ -729,7 +756,7 @@ class Trick {
      */
     drawBigImage() {
         if (this.hovered) {
-            image(this.image, mouseX-this.image.width, mouseY-this.image.height, this.image.width*2, this.image.height*2)
+            image(this.hoverImage, mouseX-this.image.width, mouseY-this.image.height)
         }
     }
 
