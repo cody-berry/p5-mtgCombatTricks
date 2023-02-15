@@ -78,7 +78,7 @@ function setup() {
         numpad 1 → freeze sketch
         W, U, B, R, G, C, or click on symbol → Add 1 White/Blue/Black/Red/Green/Colorless mana
         w, u, b, r, g, or c → Remove 1 White/Blue/Black/Red/Green/Colorless mana
-        z → Print all available combat tricks</pre>`)
+        z → Print all available combat tricks <b>⚠ Do NOT press 'z' twice ⚠</b></pre>`)
 
     // create all the Color functions
     whiteColor = new Color('White', whiteIcon, [59, 25, 95], 50, 50)
@@ -90,6 +90,8 @@ function setup() {
 
     // our debug corner
     debugCorner = new CanvasDebugCorner(5)
+
+    frameRate(1000)
 }
 
 function filterInstantsAndFlashCards(cards) {
@@ -756,7 +758,7 @@ class Trick {
      */
     drawBigImage() {
         if (this.hovered) {
-            image(this.hoverImage, mouseX-this.image.width, mouseY-this.image.height)
+            image(this.hoverImage, width/2-this.hoverImage.width/2, windowHeight/2+window.scrollY-this.hoverImage.height/2)
         }
     }
 
