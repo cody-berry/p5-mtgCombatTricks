@@ -22,6 +22,7 @@ let colorlessIcon
 let phyrexianIcon
 let whiteColor
 let blueColor
+let blackColor
 let redColor
 let greenColor
 let colorlessColor
@@ -113,7 +114,8 @@ function filterInstantsAndFlashCards(cards) {
 }
 
 function draw() {
-    background(234, 34, 24)
+    clear()
+    background(234, 34, 24, 50)
 
     // formatting: displaying it's mana selection
     fill(100)
@@ -131,8 +133,8 @@ function draw() {
     colorlessColor.draw()
 
     // formatting: split between mana and rarities
-    fill(237, 37, 20)
-    rect(345, 0, 355, 200)
+    fill(237, 37, 20, 50)
+    rect(345, 0, 355, 195)
 
     // formatting: saying that it's rarity selection section
     fill(100)
@@ -182,11 +184,8 @@ function draw() {
     textSize(14)
 
     // formatting: split between cards able to be cast and mana symbols
-    fill(237, 37, 20)
+    fill(237, 37, 20, 50)
     rect(0, 195, 700, 205)
-    rect(350, 100, 700, 200)
-    rect(560, 0, 800, 200)
-    rect(0, 40, 30, 200)
 
     strokeWeight(0.5)
     fill(100)
@@ -194,9 +193,8 @@ function draw() {
     // formatting: displaying that the next part is cards able to be cast
     text('Cards able to be cast', 4, 225)
     noStroke()
-    fill(237, 37, 20)
+    fill(237, 37, 20, 50)
     rect(0, 229, 700, 233)
-    rect(160, 200, 800, 233)
 
     // how wide is a column, and how high is a row?
     let colWidth = 125
@@ -247,7 +245,7 @@ function draw() {
         cardCMCs++
 
         noStroke()
-        fill(237, 37, 20)
+        fill(237, 37, 20, 50)
         rect(-10, 225+row*rowHeight + cardCMCs*cardCMCSpacingHeight, 800, 235+row*rowHeight + cardCMCs*cardCMCSpacingHeight)
     }
 
