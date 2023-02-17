@@ -21,7 +21,7 @@ body {
     background-color: hsla(237, 37%, 20%, 0.5);
     color: gainsboro;
     padding: 2px 4px 2px 4px;
-    font-family: consolas;
+    font-family: consolas, serif;
     font-size: 12px;
-    height: 100px;
+    height: 200px;
 }

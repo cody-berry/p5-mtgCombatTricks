@@ -34,6 +34,7 @@ let raritiesSelected = { // the rarites that have been selected
     'mythic': true
 }
 
+let hoveringOverImage = false
 
 function preload() {
     font = loadFont('data/consola.ttf')
@@ -79,7 +80,13 @@ function setup() {
         numpad 1 → freeze sketch
         W, U, B, R, G, C, or click on symbol → Add 1 White/Blue/Black/Red/Green/Colorless mana
         w, u, b, r, g, or c → Remove 1 White/Blue/Black/Red/Green/Colorless mana
-        z → Print all available combat tricks <b>⚠ Do NOT press 'z' twice ⚠</b></pre>`)
+        z → Display all available combat tricks <b>⚠ Do NOT press 'z' twice ⚠
+        
+        Hover over a combat trick card to display the trick in the middle of the screen
+        The hovered combat trick cannot change while you are hovering over the image 
+        displayed in the middle of the screen
+        Please do not reduce width below the canvas height
+        </b></pre>`)
 
     // create all the Color functions
     whiteColor = new Color('White', whiteIcon, [59, 25, 95], 50, 50)
@@ -209,6 +216,8 @@ function draw() {
     // used to define the position of the next card
     let col = 0
     let row = 0
+
+    hoveringOverImage = false
 
     // iterate through all the card CMCs
     for (let cardCMC in availableCardImages) {
@@ -756,29 +765,53 @@ class Trick {
      */
     drawBigImage() {
         if (this.hovered) {
-            image(this.hoverImage, width/2-this.hoverImage.width/2, windowHeight/2+window.scrollY-this.hoverImage.height/2)
+            image(this.hoverImage, width/2-this.hoverImage.width/2, windowHeight/4+window.scrollY-this.hoverImage.height/2)
         }
     }
 
     /*
-     * Definition: Sets this.hovered to True if this card is hovered.
+     * Definition: Sets this.hovered to True if this card is hovered. It also
+     *             sets hoveringOverImage to True under the same conditions as
+     *             it is set to False at the beginning of each draw frame.
      * Argument definition:
      * None
      */
     checkIsHovered() {
-        if (mouseX < this.xPos) {
-            this.hovered = false
-            return
-        } if (mouseX > this.xPos + this.image.width) {
-            this.hovered = false
-            return
-        } if (mouseY < this.yPos) {
-            this.hovered = false
-            return
-        } if (mouseY > this.yPos + this.image.height) {
-            this.hovered = false
-            return
+        // the hover image is bounded by some very hard-to-calculate
+        // coordinates.
+
+        let hoveringOverHoverImage = false
+
+        if (hoveringOverImage ||
+            (mouseX < this.xPos || // goes left of the left bound
+            mouseX > this.xPos + this.image.width || // goes right of the right bound
+            mouseY < this.yPos || // goes higher than the top bound
+            mouseY > this.yPos + this.image.height) // goes lower than the bottom bound
+        ){
+            if (mouseX < width/2-this.hoverImage.width/2 ||
+                mouseX > width/2+this.hoverImage.width/2 ||
+                mouseY < windowHeight/4+window.scrollY-this.hoverImage.height/2 ||
+                mouseY > windowHeight/4+window.scrollY+this.hoverImage.height/2) {
+            } else {
+                hoveringOverHoverImage = true
+            }
         }
-        this.hovered = true
+
+        if (!hoveringOverHoverImage) {
+            if (mouseX < this.xPos || // goes left of the left bound
+                mouseX > this.xPos + this.image.width || // goes right of the right bound
+                mouseY < this.yPos || // goes higher than the top bound
+                mouseY > this.yPos + this.image.height) { // goes lower than the bottom bound
+                this.hovered = false
+                return
+            }
+
+            this.hovered = true
+            hoveringOverImage = true
+        } else {
+            if (this.hovered === true) {
+                hoveringOverImage = true
+            }
+        }
     }
 }
