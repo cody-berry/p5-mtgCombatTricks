@@ -1,14 +1,16 @@
 html, body {
-    background-image: linear-gradient(
-            rgba(13, 13, 40, 0.4),
-            rgba(13, 13, 40, 0.5)),
-            url(
-            "https://cards.scryfall.io/art_crop/front/3/a/3a836e6b-6854-4f6f-bc78-2da1fd4dd224.jpg?1675956948");
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
-    background-size: cover;
+    background-color: rgb(32, 33, 51);
     color: gainsboro;
+    /*background-image: linear-gradient(*/
+    /*        rgba(13, 13, 40, 0.4),*/
+    /*        rgba(13, 13, 40, 0.5)),*/
+    /*        url(*/
+    /*        "https://cards.scryfall.io/art_crop/???");*/
+    /*background-repeat: no-repeat;*/
+    /*background-attachment: fixed;*/
+    /*background-position: center;*/
+    /*background-size: cover;*/
+    /*color: gainsboro;*/
 }
 
 body {
@@ -18,10 +20,9 @@ body {
 }
 
 #ins {
-    background-color: hsla(237, 37%, 20%, 0.5);
     color: gainsboro;
     padding: 2px 4px 2px 4px;
-    font-family: consolas, serif;
+    font-family: consolas;
     font-size: 12px;
-    height: 200px;
+    height: 150px;
 }
