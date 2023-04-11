@@ -307,7 +307,11 @@ function storeAvailableCards() {
             }
         }
 
-        if (cardCMC - genericManaOmitted > sum(mana) || /* the rarity could
+        if (cardCMC - genericManaOmitted > sum(mana)) {
+            if (card["oracle_text"].indexOf("Convoke") === -1) {
+                continue
+            }
+        } if (/* the rarity could
          sometimes not be
          selected!*/ !raritiesSelected[card['rarity']]) {
         } else {
@@ -342,14 +346,24 @@ function storeAvailableCards() {
 
                             print(cardCMC, card['name'], genericManaOmitted)
 
-                            // in storeAvailableCards, I used a currentCardCMCQueue. This didn't
-                            // work out properly.
-                            if (availableCardImages[cardCMC - genericManaOmitted]) {
-                                availableCardImages[cardCMC - genericManaOmitted].push(newTrick)
-                            } else {
-                                availableCardImages[cardCMC - genericManaOmitted] = [newTrick]
-                            }})
-                        })
+                            //
+                            if (card["oracle_text"].indexOf("Convoke") !== -1) {
+                                if (availableCardImages[0]) {
+                                    availableCardImages[0].push(newTrick)
+                                } else {
+                                    availableCardImages[0] = [newTrick]
+                                }
+                            }
+                            else {
+                                if (availableCardImages[cardCMC - genericManaOmitted]) {
+                                    availableCardImages[cardCMC - genericManaOmitted].push(newTrick)
+                                } else {
+                                    availableCardImages[cardCMC - genericManaOmitted] = [newTrick]
+                                }
+                            }
+                        }
+                    )
+                })
             }
         }
     }
