@@ -141,7 +141,7 @@ function draw() {
 
     // formatting: split between mana and rarities
 
-    fill(237, 37, 20)
+    fill(237, 37, 20, 50)
     rect(345, 0, 355, 195)
 
     // formatting: saying that it's rarity selection section
@@ -192,7 +192,7 @@ function draw() {
     textSize(14)
 
     // formatting: split between cards able to be cast and mana symbols
-    fill(237, 37, 20)
+    fill(237, 37, 20, 50)
     rect(0, 195, 700, 205)
 
     strokeWeight(0.5)
@@ -201,7 +201,7 @@ function draw() {
     // formatting: displaying that the next part is cards able to be cast
     text('Cards able to be cast', 4, 225)
     noStroke()
-    fill(237, 37, 20)
+    fill(237, 37, 20, 50)
     rect(0, 229, 700, 233)
 
     // how wide is a column, and how high is a row?
@@ -255,7 +255,7 @@ function draw() {
         cardCMCs++
 
         noStroke()
-        fill(237, 37, 20)
+        fill(237, 37, 20, 50)
         rect(-10, 225+row*rowHeight + cardCMCs*cardCMCSpacingHeight, 800, 235+row*rowHeight + cardCMCs*cardCMCSpacingHeight)
     }
 
