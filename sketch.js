@@ -78,23 +78,31 @@ function setup() {
     instructions = select('#ins')
     instructions.html(`<pre>
         numpad 1 → freeze sketch
-        W, U, B, R, G, C, or click on symbol → Add 1 White/Blue/Black/Red/Green/Colorless mana
+        W, U, B, R, G, C, or click on symbol → Add 1 mana
         w, u, b, r, g, or c → Remove 1 White/Blue/Black/Red/Green/Colorless mana
         z → Display all available combat tricks <b>⚠ Do NOT press 'z' twice ⚠
         
-        Hover over a combat trick card to display the trick in the middle of the screen
-        The hovered combat trick cannot change while you are hovering over the image 
-        displayed in the middle of the screen
+        Hover over a card to display the trick in the middle of the screen.
+        The hovered combat trick cannot change while you are hovering over the 
+        image displayed in the middle of the screen.
         Please do not reduce width below the canvas height
         </b></pre>`)
 
     // create all the Color functions
-    whiteColor = new Color('White', whiteIcon, [59, 25, 95], 50, 50)
-    blueColor = new Color('Blue', blueIcon, [192, 40, 93], 100, 50)
-    blackColor = new Color('Black', blackIcon, [0, 3, 47], 150, 50)
-    redColor = new Color('Red', redIcon, [5, 70, 84], 200, 50)
-    greenColor = new Color('Green', greenIcon, [155, 95, 71], 250, 50)
-    colorlessColor = new Color('Colorless', colorlessIcon, [240, 2, 87], 300, 50)
+    // where are all the colors?
+    let colors = {"W": [59, 25, 95],
+                  "U": [192, 40, 93],
+                  "B": [0, 3, 47],
+                  "R": [5, 70, 84],
+                  "G": [155, 95, 71],
+                  "C": [240, 2, 87]}
+
+    whiteColor = new Color('White', whiteIcon, colors.W, 50, 50)
+    blueColor = new Color('Blue', blueIcon, colors.U, 100, 50)
+    blackColor = new Color('Black', blackIcon, colors.B, 150, 50)
+    redColor = new Color('Red', redIcon, colors.R, 200, 50)
+    greenColor = new Color('Green', greenIcon, colors.G, 250, 50)
+    colorlessColor = new Color('Colorless', colorlessIcon, colors.C, 300, 50)
 
     // our debug corner
     debugCorner = new CanvasDebugCorner(5)
