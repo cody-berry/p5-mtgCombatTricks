@@ -108,6 +108,40 @@ function setup() {
     debugCorner = new CanvasDebugCorner(5)
 
     frameRate(1000)
+
+    /* accessing css stylesheet to set it to
+     * following CSS: */
+    /* background-image: linear-gradient(
+     *   rgba(13, 13, 40, 0.3),
+     *   rgba(13, 13, 40, 0.5),
+     *   url("wallpapers/???"));*/
+    /* where ??? is a random wallpaper from the wallpapers directory. */
+    let css = select("body")
+    let wallpapers = ["MOM/012.jpg", "MOM/339.jpg"]
+    // css.style("background-color", "orange")
+    print("linear-gradient(\n" +
+        "rgba(13, 13, 40, 0.3), \n" +
+        "rgba(13, 13, 40, 0.5), \n" +
+        "url(\"wallpapers/" +
+        wallpapers[floor(random() * wallpapers.length)] +
+        "\"))")
+    // print("url(\"wallpapers/" +
+    //     wallpapers[floor(random() * wallpapers.length)] +
+    //     "\")")
+    // css.style("background-image", "url(\"wallpapers/" +
+    //                               wallpapers[floor(random() * wallpapers.length)] +
+    //                               "\")")
+    css.style("background-image", "linear-gradient(\n" +
+                                  "rgba(13, 13, 40, 0.3), \n" +
+                                  "rgba(13, 13, 40, 0.5)), \n" +
+                                  "url(\"wallpapers/" +
+                                  wallpapers[floor(random() * wallpapers.length)] +
+                                  "\")")
+    // css.style("background-repeat", "no-repeat")
+    // css.style("background-attachment", "fixed")
+    // css.style("background-position", "center")
+    // css.style("background-size", "cover")
+    // css.style("color", "gainsboro")
 }
 
 function filterInstantsAndFlashCards(cards) {
