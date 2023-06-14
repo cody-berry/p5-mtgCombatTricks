@@ -10,7 +10,7 @@ let variableWidthFont
 let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 // scryfall data url; BRO (the BROther's War)
-let url='https://api.scryfall.com/cards/search?q=set:mom'
+let url='https://api.scryfall.com/cards/search?q=set:ltr'
 let cards=[] /* data for the cards */
 let mana = [0,0,0,0,0,0] /* mana in WUBRG order, then colorless mana */
 let whiteIcon
@@ -40,6 +40,7 @@ function preload() {
     font = loadFont('data/consola.ttf')
     fixedWidthFont = loadFont('data/consola.ttf')
     variableWidthFont = loadFont('data/meiryo.ttf')
+
     loadJSON(url, printAndPaginateData)
     // retro artifacts might be useful later.
     // loadJSON('https://api.scryfall.com/cards/search?q=set:brr', printAndPaginateData)
@@ -117,7 +118,7 @@ function setup() {
      *   url("wallpapers/???"));*/
     /* where ??? is a random wallpaper from the wallpapers directory. */
     let css = select("body")
-    let wallpapers = ["MOM/012.jpg", "MOM/125.jpg", "MOM/169.jpg", "MOM/213.jpg", "MOM/339.jpg"]
+    let wallpapers = ["LTR/Sting.jpg"]
     // css.style("background-color", "orange")
     print("linear-gradient(\n" +
         "rgba(13, 13, 40, 0.3), \n" +
