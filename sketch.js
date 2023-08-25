@@ -10,7 +10,7 @@ let variableWidthFont
 let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 // scryfall data url; BRO (the BROther's War)
-let url='https://api.scryfall.com/cards/search?q=set:ltr'
+let url='https://api.scryfall.com/cards/search?q=set:woe'
 let cards=[] /* data for the cards */
 let mana = [0,0,0,0,0,0] /* mana in WUBRG order, then colorless mana */
 let whiteIcon
@@ -118,7 +118,7 @@ function setup() {
      *   url("wallpapers/???"));*/
     /* where ??? is a random wallpaper from the wallpapers directory. */
     let css = select("body")
-    let wallpapers = ["LTR/Sting.jpg", "LTR/Ring.jpg", "LTR/MithrilCoat.jpg", "LTR/Glamdring.jpg"]
+    let wallpapers = ["WOE/211.jpg", "WOE/218.jpg"]
     // css.style("background-color", "orange")
     print("linear-gradient(\n" +
         "rgba(13, 13, 40, 0.3), \n" +
