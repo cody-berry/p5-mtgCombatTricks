@@ -42,8 +42,7 @@ function preload() {
     variableWidthFont = loadFont('data/meiryo.ttf')
 
     loadJSON(url, printAndPaginateData)
-    // retro artifacts might be useful later.
-    // loadJSON('https://api.scryfall.com/cards/search?q=set:brr', printAndPaginateData)
+    loadJSON('https://api.scryfall.com/cards/search?q=set:wot', printAndPaginateData)
 
     // iterate through all the mana symbols and load them
     whiteIcon = loadImage('svg/w.svg')
@@ -75,6 +74,8 @@ function setup() {
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
 
+    print(cards)
+
     /* initialize instruction div */
     instructions = select('#ins')
     instructions.html(`<pre>
@@ -86,7 +87,7 @@ function setup() {
         Hover over a card to display the trick in the middle of the screen.
         The hovered combat trick cannot change while you are hovering over the 
         image displayed in the middle of the screen.
-        Please do not reduce width below the canvas height
+        Please do not reduce width below the canvas width
         </b></pre>`)
 
     // create all the Color functions
@@ -149,15 +150,23 @@ function filterInstantsAndFlashCards(cards) {
     // instants and flash cards
     let resultingCardList = []
     for (let card of cards) {
-        // type_line is the type of the card. If it is an Instant, then it
-        // is a combat trick.
-        if (card['type_line'] === 'Instant') {
-            resultingCardList.push(card)
-        }
-        // it may also be a combat trick if the card keywords includes
-        // Flash. For example, in BRO, Zephyr Sentinel or Ambush Paratrooper.
-        if (card['keywords'].includes('Flash')) {
-            resultingCardList.push(card)
+        if (card["card_faces"]) {
+            for (let cardFace of card["card_faces"]) {
+                print(`${cardFace['name']} ${cardFace['mana_cost']}\n` +
+                    `${cardFace['type_line']}\n${cardFace['oracle_text']}\n` +
+                    (("power" in cardFace) ? `${cardFace["power"]}/${cardFace["toughness"]}` : ``))
+            }
+        } else {
+            // type_line is the type of the card. If it is an Instant, then it
+            // is a combat trick.
+            if (card['type_line'].includes('Instant')) {
+                resultingCardList.push(card)
+            }
+            // it may also be a combat trick if the card keywords includes
+            // Flash. For example, in BRO, Zephyr Sentinel or Ambush Paratrooper.
+            if (card['keywords'].includes('Flash')) {
+                resultingCardList.push(card)
+            }
         }
     }
     return resultingCardList
@@ -318,8 +327,10 @@ function draw() {
     textAlign(LEFT)
 
     /* debugCorner needs to be last so its z-index is highest */
-    debugCorner.setText(`frameCount: ${frameCount}`, 2)
-    debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
+    if (frameCount % 60 === 0) {
+        debugCorner.setText(`frameCount: ${frameCount}`, 2)
+        debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
+    }
     debugCorner.showBottom()
 }
 
@@ -369,9 +380,7 @@ function storeAvailableCards() {
 
             let cannotCastCard = false
             for (let char of cardCost) {
-                if (!['X', '1', '2', '3',
-                      '4', '5', '6', '7',
-                      '8', '9', '{', '}'] // characters to be ignored
+                if (['W', 'U', 'B', 'R', 'G'] // characters to be selected
                       .includes(char) && !cannotCastCard) {
                     manaMinusUsed[char] -= 1 // char's gonna be W, U, B, R, or G
                     if (manaMinusUsed[char] < 0) {
