@@ -33,6 +33,9 @@ let raritiesSelected = { // the rarites that have been selected
     'rare': true,
     'mythic': true
 }
+let cnv
+let rowsPrevious = 0
+let cardCMCsPrevious = 0
 
 let hoveringOverImage = false
 
@@ -69,7 +72,7 @@ function printAndPaginateData(data) {
 }
 
 function setup() {
-    let cnv = createCanvas(700, 3000)
+    cnv = createCanvas(700, 3000)
     cnv.parent('#canvas')
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
@@ -227,7 +230,23 @@ function calculateCMC(manaCost) {
 
 function draw() {
     clear()
+
+    // how wide is a column, and how high is a row?
+    let colWidth = 125
+    let rowHeight = 172
+
+    // the space between card CMCs and the number of the spaces between card
+    // CMCs we have. otherwise a card will eventually overlap with the
+    // spacing between.
+    let cardCMCs = 0
+    let cardCMCSpacingHeight = 17
+
+    cnv.height = 235+rowsPrevious*rowHeight + cardCMCsPrevious*cardCMCSpacingHeight + 100
+
     background(234, 34, 24, 50)
+
+
+
 
     // formatting: displaying it's mana selection
     fill(100)
@@ -309,16 +328,6 @@ function draw() {
     fill(237, 37, 20, 50)
     rect(0, 229, 700, 233)
 
-    // how wide is a column, and how high is a row?
-    let colWidth = 125
-    let rowHeight = 172
-
-    // the space between card CMCs and the number of the spaces between card
-    // CMCs we have. otherwise a card will eventually overlap with the
-    // spacing between.
-    let cardCMCs = 0
-    let cardCMCSpacingHeight = 17
-
     // used to define the position of the next card
     let col = 0
     let row = 0
@@ -373,6 +382,9 @@ function draw() {
             trick.drawBigImage()
         }
     }
+
+    rowsPrevious = row
+    cardCMCsPrevious = cardCMCs
 
     textAlign(LEFT)
 
