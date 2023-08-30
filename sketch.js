@@ -57,15 +57,15 @@ function preload() {
 // paginates the data if necessary, then filters the instants and flash cards
 function printAndPaginateData(data) {
     let currentCards = data['data']
+
+    currentCards = filterInstantsAndFlashCards(currentCards)
+
     // add the data to the json
     cards = [ ...cards, ...currentCards] /* spread operator: ... */
 
     if (data['has_more']) {
         loadJSON(data['next_page'], printAndPaginateData)
     }
-
-
-    cards = filterInstantsAndFlashCards(cards)
 }
 
 function setup() {
@@ -74,15 +74,13 @@ function setup() {
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
 
-    print(cards)
-
     /* initialize instruction div */
     instructions = select('#ins')
     instructions.html(`<pre>
         numpad 1 → freeze sketch
         W, U, B, R, G, C, or click on symbol → Add 1 mana
         w, u, b, r, g, or c → Remove 1 White/Blue/Black/Red/Green/Colorless mana
-        z → Display all available combat tricks <b>⚠ Do NOT press 'z' twice ⚠
+        z → Display all available combat tricks <b>⚠ Do NOT press 'z' twice ⚠</b>
         
         Hover over a card to display the trick in the middle of the screen.
         The hovered combat trick cannot change while you are hovering over the 
@@ -95,9 +93,9 @@ function setup() {
     let colors = {"W": [59, 25, 95],
                   "U": [192, 40, 93],
                   "B": [0, 3, 47],
-                  "R": [5, 70, 84],
+                  "R": [5, 80, 84],
                   "G": [155, 95, 71],
-                  "C": [240, 2, 87]}
+                  "C": [240, 5, 87]}
 
     whiteColor = new Color('White', whiteIcon, colors.W, 50, 50)
     blueColor = new Color('Blue', blueIcon, colors.U, 100, 50)
@@ -144,32 +142,87 @@ function setup() {
     // css.style("background-position", "center")
     // css.style("background-size", "cover")
     // css.style("color", "gainsboro")
+    manaCosts = [
+        "{2}{U}{G}",
+        "{5}{R}",
+        "{R}{G}"
+    ]
+    for (let manaCost of manaCosts) {
+        print(calculateCMC(manaCost))
+        if (manaCost === "{2}{U}{G}") {
+            print(4)
+        } if (manaCost === "{5}{R}") {
+            print(6)
+        } if (manaCost === "{R}{G}") {
+            print(2)
+        }
+    }
 }
 
 function filterInstantsAndFlashCards(cards) {
+    print(cards)
     // instants and flash cards
     let resultingCardList = []
     for (let card of cards) {
         if (card["card_faces"]) {
             for (let cardFace of card["card_faces"]) {
-                print(`${cardFace['name']} ${cardFace['mana_cost']}\n` +
-                    `${cardFace['type_line']}\n${cardFace['oracle_text']}\n` +
-                    (("power" in cardFace) ? `${cardFace["power"]}/${cardFace["toughness"]}` : ``))
+                // type_line is the type of the card. If it is an Instant, then
+                // it is a combat trick.
+                if (cardFace['type_line'].includes('Instant')) {
+                    cardFace["image_uris"] = card["image_uris"]
+                    cardFace["rarity"] = card["rarity"]
+                    cardFace["cmc"] = calculateCMC(cardFace["mana_cost"])
+                    resultingCardList.push(cardFace)
+                }
+                // it may also be a combat trick if the oracle text includes
+                // Flash. For example, in BRO, Zephyr Sentinel or Ambush
+                // Paratrooper.
+                if (cardFace['oracle_text'].includes('Flash') ||
+                    cardFace['oracle_text'].includes('flash')) {
+                    cardFace["image_uris"] = card["image_uris"]
+                    cardFace["rarity"] = card["rarity"]
+                    cardFace["cmc"] = calculateCMC(cardFace["mana_cost"])
+                    resultingCardList.push(cardFace)
+                }
             }
         } else {
-            // type_line is the type of the card. If it is an Instant, then it
-            // is a combat trick.
-            if (card['type_line'].includes('Instant')) {
-                resultingCardList.push(card)
-            }
-            // it may also be a combat trick if the card keywords includes
-            // Flash. For example, in BRO, Zephyr Sentinel or Ambush Paratrooper.
-            if (card['keywords'].includes('Flash')) {
-                resultingCardList.push(card)
+            if (card['object'] !== 'card_face') {
+                // type_line is the type of the card. If it is an Instant, then it
+                // is a combat trick.
+                if (card['type_line'].includes('Instant')) {
+                    resultingCardList.push(card)
+                }
+                // it may also be a combat trick if the card keywords includes
+                // Flash. For example, in BRO, Zephyr Sentinel or Ambush Paratrooper.
+                if (card['keywords'].includes('Flash')) {
+                    resultingCardList.push(card)
+                }
             }
         }
     }
+    print(resultingCardList)
     return resultingCardList
+}
+
+// calculates the cmc based on a mana cost
+function calculateCMC(manaCost) {
+    let cmc = 0
+    let lastLeftBracket = 0
+    let currentNumber = 0
+    for (let i = 0; i < manaCost.length; i++) {
+        let char = manaCost[i]
+        if (char === "{") {
+            let lastLeftBracket = i
+        } else if (char === "}") {
+            cmc += currentNumber
+            currentNumber = 0
+        } else if (!isNaN(parseInt(char))) {
+            currentNumber = currentNumber*10 + parseInt(char)
+        } else if (["W", "U", "B", "R", "G"].includes(char)) {
+            cmc++
+        }
+    }
+    return cmc
 }
 
 function draw() {
@@ -251,7 +304,7 @@ function draw() {
     fill(100)
 
     // formatting: displaying that the next part is cards able to be cast
-    text('Cards able to be cast', 4, 225)
+    text('Cards able to be cast (press \'z\' to update)', 4, 225)
     noStroke()
     fill(237, 37, 20, 50)
     rect(0, 229, 700, 233)
@@ -321,9 +374,6 @@ function draw() {
         }
     }
 
-    if (frameCount > 30000)
-        noLoop()
-
     textAlign(LEFT)
 
     /* debugCorner needs to be last so its z-index is highest */
@@ -339,6 +389,7 @@ function storeAvailableCards() {
     availableCardImages = {} // the available cards in a dictionary with keys
                              // of cmc's and values of a list of card images
     for (let card of cards) {
+        print(card["name"])
         let genericManaOmitted = 0
         let cardCMC = card['cmc']
         // if 'This spell costs' and 'less to cast' are in the string...
@@ -352,7 +403,6 @@ function storeAvailableCards() {
                 // to a number, we break from the loop and set it to
                 // genericMana if it is not an X.
                 for (let char of card['mana_cost']) {
-                    print(char)
                     if (char !== 'X' && char !== '{' && char !== '}') {
                         genericManaOmitted = char*1
                         break
@@ -389,6 +439,7 @@ function storeAvailableCards() {
                 }
             }
             if (!cannotCastCard) {
+                print(card["name"] + " loading")
                 loadImage(card['image_uris']['png'],
                     data => {
                         loadImage(card['image_uris']['png'], data2 => {
@@ -396,9 +447,8 @@ function storeAvailableCards() {
                             let newTrick = new Trick(data, 0, 0, 120, data2)
                             newTrick.setShow(false)
 
-                            print(cardCMC, card['name'], genericManaOmitted)
+                            print(card["name"] + " loaded")
 
-                            //
                             if (card["oracle_text"].indexOf("Convoke") !== -1) {
                                 if (availableCardImages[0]) {
                                     availableCardImages[0].push(newTrick)
