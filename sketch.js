@@ -36,7 +36,6 @@ let raritiesSelected = { // the rarites that have been selected
 let cnv
 let rowsPrevious = 0
 let cardCMCsPrevious = 0
-
 let hoveringOverImage = false
 
 function preload() {
@@ -72,8 +71,9 @@ function printAndPaginateData(data) {
 }
 
 function setup() {
-    cnv = createCanvas(700, 3000)
+    cnv = createCanvas(700, 2600)
     cnv.parent('#canvas')
+
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
 
@@ -83,12 +83,16 @@ function setup() {
         numpad 1 → freeze sketch
         W, U, B, R, G, C, or click on symbol → Add 1 mana
         w, u, b, r, g, or c → Remove 1 White/Blue/Black/Red/Green/Colorless mana
-        z → Display all available combat tricks <b>⚠ Do NOT press 'z' twice ⚠</b>
+        z → Display all available combat tricks
         
         Hover over a card to display the trick in the middle of the screen.
         The hovered combat trick cannot change while you are hovering over the 
         image displayed in the middle of the screen.
+        If you click on the hovered combat trick or the image in the middle of 
+        the screen, the card data will appear in Console in DevTools.
+        
         Please do not reduce width below the canvas width
+        <b>⚠ Do NOT press 'z' multiple times within a short time ⚠</b>
         </b></pre>`)
 
     // create all the Color functions
@@ -121,19 +125,6 @@ function setup() {
     /* where ??? is a random wallpaper from the wallpapers directory. */
     let css = select("body")
     let wallpapers = ["WOE/211.jpg", "WOE/218.jpg"]
-    // css.style("background-color", "orange")
-    print("linear-gradient(\n" +
-        "rgba(13, 13, 40, 0.3), \n" +
-        "rgba(13, 13, 40, 0.5), \n" +
-        "url(\"wallpapers/" +
-        wallpapers[floor(random() * wallpapers.length)] +
-        "\"))")
-    // print("url(\"wallpapers/" +
-    //     wallpapers[floor(random() * wallpapers.length)] +
-    //     "\")")
-    // css.style("background-image", "url(\"wallpapers/" +
-    //                               wallpapers[floor(random() * wallpapers.length)] +
-    //                               "\")")
     css.style("background-image", "linear-gradient(\n" +
                                   "rgba(13, 13, 40, 0.3), \n" +
                                   "rgba(13, 13, 40, 0.5)), \n" +
@@ -150,20 +141,9 @@ function setup() {
         "{5}{R}",
         "{R}{G}"
     ]
-    for (let manaCost of manaCosts) {
-        print(calculateCMC(manaCost))
-        if (manaCost === "{2}{U}{G}") {
-            print(4)
-        } if (manaCost === "{5}{R}") {
-            print(6)
-        } if (manaCost === "{R}{G}") {
-            print(2)
-        }
-    }
 }
 
 function filterInstantsAndFlashCards(cards) {
-    print(cards)
     // instants and flash cards
     let resultingCardList = []
     for (let card of cards) {
@@ -203,7 +183,6 @@ function filterInstantsAndFlashCards(cards) {
             }
         }
     }
-    print(resultingCardList)
     return resultingCardList
 }
 
@@ -241,12 +220,9 @@ function draw() {
     let cardCMCs = 0
     let cardCMCSpacingHeight = 17
 
-    cnv.height = 235+rowsPrevious*rowHeight + cardCMCsPrevious*cardCMCSpacingHeight + 100
+    resizeCanvas(700, 335+rowsPrevious*rowHeight + cardCMCsPrevious*cardCMCSpacingHeight)
 
     background(234, 34, 24, 50)
-
-
-
 
     // formatting: displaying it's mana selection
     fill(100)
@@ -332,7 +308,7 @@ function draw() {
     let col = 0
     let row = 0
 
-    hoveringOverImage = false
+    trickHovered = null
 
     // iterate through all the card CMCs
     for (let cardCMC in availableCardImages) {
@@ -389,10 +365,8 @@ function draw() {
     textAlign(LEFT)
 
     /* debugCorner needs to be last so its z-index is highest */
-    if (frameCount % 60 === 0) {
-        debugCorner.setText(`frameCount: ${frameCount}`, 2)
+    debugCorner.setText(`frameCount: ${frameCount}`, 2)
         debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
-    }
     debugCorner.showBottom()
 }
 
@@ -401,7 +375,6 @@ function storeAvailableCards() {
     availableCardImages = {} // the available cards in a dictionary with keys
                              // of cmc's and values of a list of card images
     for (let card of cards) {
-        print(card["name"])
         let genericManaOmitted = 0
         let cardCMC = card['cmc']
         // if 'This spell costs' and 'less to cast' are in the string...
@@ -451,15 +424,13 @@ function storeAvailableCards() {
                 }
             }
             if (!cannotCastCard) {
-                print(card["name"] + " loading")
                 loadImage(card['image_uris']['png'],
                     data => {
                         loadImage(card['image_uris']['png'], data2 => {
                             // the Trick for displaying
-                            let newTrick = new Trick(data, 0, 0, 120, data2)
+                            let newTrick = new Trick(data, 0, 0, 120, data2, card)
                             newTrick.setShow(false)
 
-                            print(card["name"] + " loaded")
 
                             if (card["oracle_text"].indexOf("Convoke") !== -1) {
                                 if (availableCardImages[0]) {
@@ -529,60 +500,48 @@ function printRemovedMana(color) {
     if (color === 'w') {
         mana[0]--
         if (mana[0] < 0) {
-            print('Invalid ' + mana[0])
             mana[0] = 0
         } else {
-            print('Removing White mana: White mana now at ' + mana[0])
             whiteColor.decrement()
         }
     }
     if (color === 'u') {
         mana[1]--
         if (mana[1] < 0) {
-            print('Invalid ' + mana[1])
             mana[1] = 0
         } else {
-            print('Removing Blue mana: Blue mana now at ' + mana[1])
             blueColor.decrement()
         }
     }
     if (color === 'b') {
         mana[2]--
         if (mana[2] < 0) {
-            print('Invalid ' + mana[2])
             mana[2] = 0
         } else {
-            print('Removing Black mana: Black mana now at ' + mana[2])
             blackColor.decrement()
         }
     }
     if (color === 'r') {
         mana[3]--
         if (mana[3] < 0) {
-            print('Invalid ' + mana[3])
             mana[3] = 0
         } else {
-            print('Removing Red mana: Red mana now at ' + mana[3])
             redColor.decrement()
         }
     }
     if (color === 'g') {
         mana[4]--
         if (mana[4] < 0) {
-            print('Invalid ' + mana[4])
             mana[4] = 0
         } else {
-            print('Removing Green mana: Green mana now at ' + mana[4])
             greenColor.decrement()
         }
     }
     if (color === 'c') {
         mana[5]--
         if (mana[5] < 0) {
-            print('Invalid ' + mana[5])
             mana[5] = 0
         } else {
-            print('Removing Colorless mana: Colorless mana now at ' + mana[5])
             colorlessColor.decrement()
         }
     }
@@ -591,7 +550,6 @@ function printRemovedMana(color) {
 function printAddedMana(color) {
     if (color === 'w') {
         if (mana[0] > 8) {
-            print('Invalid ' + mana[0])
         } else {
             mana[0]++
             whiteColor.increment()
@@ -599,7 +557,6 @@ function printAddedMana(color) {
     }
     if (color === 'u') {
         if (mana[1] > 8) {
-            print('Invalid ' + mana[1])
         } else {
             mana[1]++
             blueColor.increment()
@@ -607,7 +564,6 @@ function printAddedMana(color) {
     }
     if (color === 'b') {
         if (mana[2] > 8) {
-            print('Invalid ' + mana[2])
         } else {
             mana[2]++
             blackColor.increment()
@@ -615,7 +571,6 @@ function printAddedMana(color) {
     }
     if (color === 'r') {
         if (mana[3] > 8) {
-            print('Invalid ' + mana[3])
         } else {
             mana[3]++
             redColor.increment()
@@ -623,7 +578,6 @@ function printAddedMana(color) {
     }
     if (color === 'g') {
         if (mana[4] > 8) {
-            print('Invalid ' + mana[4])
         } else {
             mana[4]++
             greenColor.increment()
@@ -631,7 +585,6 @@ function printAddedMana(color) {
     }
     if (color === 'c') {
         if (mana[5] > 8) {
-            print('Invalid ' + mana[5])
         } else {
             mana[5]++
             colorlessColor.increment()
@@ -654,7 +607,7 @@ function mousePressed() {
     let lowerBoundColorlessX = colorlessColor.xPosition
     let upperBoundColorlessX = colorlessColor.xPosition + 35
 
-    // is it even in the row of colors?
+    // is it even in the row of colors and rarities?
     if (50 < mouseY && mouseY < 100) {
         // white
         if (lowerBoundWhiteX < mouseX && mouseX < upperBoundWhiteX) {
@@ -680,18 +633,32 @@ function mousePressed() {
         if (lowerBoundColorlessX < mouseX && mouseX < upperBoundColorlessX) {
             printAddedMana('c')
         }
+
+        // rarities!
+        if (50 < mouseY && mouseY < 100) {
+            if (375 < mouseX && mouseX < 410) {
+                raritiesSelected['common'] = !raritiesSelected['common']
+            } if (420 < mouseX && mouseX < 455) {
+                raritiesSelected['uncommon'] = !raritiesSelected['uncommon']
+            } if (465 < mouseX && mouseX < 500) {
+                raritiesSelected['rare'] = !raritiesSelected['rare']
+            } if (510 < mouseX && mouseX < 545) {
+                raritiesSelected['mythic'] = !raritiesSelected['mythic']
+            }
+        }
     }
 
-    // rarities!
-    if (50 < mouseY && mouseY < 100) {
-        if (375 < mouseX && mouseX < 410) {
-            raritiesSelected['common'] = !raritiesSelected['common']
-        } if (420 < mouseX && mouseX < 455) {
-            raritiesSelected['uncommon'] = !raritiesSelected['uncommon']
-        } if (465 < mouseX && mouseX < 500) {
-            raritiesSelected['rare'] = !raritiesSelected['rare']
-        } if (510 < mouseX && mouseX < 545) {
-            raritiesSelected['mythic'] = !raritiesSelected['mythic']
+    for (let cardCMC in availableCardImages) {
+        for (let trick of availableCardImages[cardCMC]) {
+            trick.checkIsHovered()
+            if (trick.hovered) {
+                print(
+                    `${trick.data["name"]} ${trick.data["mana_cost"]}\n` +
+                    `${trick.data["type_line"]}\n` +
+                    `${trick.data["oracle_text"]}\n` +
+                    (("power" in trick.data) ? `${trick.data["power"]}/${trick.data["toughness"]}` : "")
+                )
+            }
         }
     }
 }
@@ -749,7 +716,7 @@ class CanvasDebugCorner {
             textFont(fixedWidthFont, 14)
 
             const LEFT_MARGIN = 10
-            const TOP_PADDING = 3 /* extra padding on top of the 1st line */
+            const TOP_PADDING = 3 /* extr a padding on top of the 1st line */
 
             /* offset from top of canvas */
             const DEBUG_Y_OFFSET = textAscent() + TOP_PADDING
@@ -839,7 +806,7 @@ class Trick {
         xPos → the current x position of the card.
         yPos → the current y position of the card.
      */
-    constructor(image, xPos, yPos, widthOfImage, hoverImage) {
+    constructor(image, xPos, yPos, widthOfImage, hoverImage, data) {
         this.image = image
         this.image.resize(widthOfImage, 0)
         this.hoverImage = hoverImage
@@ -848,6 +815,7 @@ class Trick {
         this.yPos = yPos
         this.show = true
         this.hovered = false
+        this.data = data
     }
 
     /*
@@ -913,9 +881,9 @@ class Trick {
 
         if (hoveringOverImage ||
             (mouseX < this.xPos || // goes left of the left bound
-            mouseX > this.xPos + this.image.width || // goes right of the right bound
-            mouseY < this.yPos || // goes higher than the top bound
-            mouseY > this.yPos + this.image.height) // goes lower than the bottom bound
+                mouseX > this.xPos + this.image.width || // goes right of the right bound
+                mouseY < this.yPos || // goes higher than the top bound
+                mouseY > this.yPos + this.image.height) // goes lower than the bottom bound
         ){
             if (mouseX < width/2-this.hoverImage.width/2 ||
                 mouseX > width/2+this.hoverImage.width/2 ||
