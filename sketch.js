@@ -10,7 +10,7 @@ let variableWidthFont
 let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 // scryfall data url; BRO (the BROther's War)
-let url='https://api.scryfall.com/cards/search?q=set:woe'
+let url='https://api.scryfall.com/cards/search?q=set:mkm'
 let cards=[] /* data for the cards */
 let mana = [0,0,0,0,0,0] /* mana in WUBRG order, then colorless mana */
 let whiteIcon
@@ -44,7 +44,7 @@ function preload() {
     variableWidthFont = loadFont('data/meiryo.ttf')
 
     loadJSON(url, printAndPaginateData)
-    loadJSON('https://api.scryfall.com/cards/search?q=set:wot', printAndPaginateData)
+    // loadJSON('https://api.scryfall.com/cards/search?q=set:wot', printAndPaginateData)
 
     // iterate through all the mana symbols and load them
     whiteIcon = loadImage('svg/w.svg')
