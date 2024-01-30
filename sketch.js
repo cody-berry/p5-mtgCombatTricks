@@ -136,11 +136,34 @@ function setup() {
     // css.style("background-position", "center")
     // css.style("background-size", "cover")
     // css.style("color", "gainsboro")
-    manaCosts = [
-        "{2}{U}{G}",
-        "{5}{R}",
-        "{R}{G}"
+    let manaCosts = [
+        "{U/G}{2/U}",
+        "{2/U}{U/R}{2/R}",
+        "{R/G}",
+        ""
     ]
+    print("Tests:")
+    for (let manaCost of manaCosts) {
+        print(manaCost)
+    }
+    print("")
+    print("Outputs:")
+    for (let manaCost of manaCosts) {
+        print(findPossibleManaCombinations(manaCost))
+    }
+    print("")
+    print("Expected outputs:")
+    print(["{U}{2}", "{G}{2}", "{U}{U}", "{G}{U}"])
+    print(["{2}{U}{2}", "{U}{U}{2}", "{2}{R}{2}", "{U}{R}{2}",
+           "{2}{U}{R}", "{U}{U}{R}", "{2}{R}{R}", "{U}{R}{R}"])
+    print(["{R}", "{G}"])
+    print([""])
+    print("")
+    print("Rearranged outputs:")
+    print(["{2}{U}", "{2}{G}", "{U}{U}", "{U}{G}"])
+    print(["{4}{U}", "{2}{U}{U}", "{4}{R}", "{2}{U}{R}",
+        "{2}{U}{R}", "{U}{U}{R}", "{2}{R}{R}", "{U}{R}{R}"])
+    print(["{R}", "{G}"])
 }
 
 function filterInstantsAndFlashCards(cards) {
@@ -189,19 +212,18 @@ function filterInstantsAndFlashCards(cards) {
 // calculates the cmc based on a mana cost
 function calculateCMC(manaCost) {
     let cmc = 0
-    let lastLeftBracket = 0
     let currentNumber = 0
     for (let i = 0; i < manaCost.length; i++) {
         let char = manaCost[i]
-        if (char === "{") {
-            let lastLeftBracket = i
-        } else if (char === "}") {
+        if (char === "}") {
             cmc += currentNumber
             currentNumber = 0
         } else if (!isNaN(parseInt(char))) {
             currentNumber = currentNumber*10 + parseInt(char)
         } else if (["W", "U", "B", "R", "G"].includes(char)) {
             cmc++
+        } else if (char === "/") {
+            cmc--
         }
     }
     return cmc
@@ -368,6 +390,71 @@ function draw() {
     debugCorner.setText(`frameCount: ${frameCount}`, 2)
         debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
     debugCorner.showBottom()
+}
+
+// return a list of possible mana costs for a hybrid mana cost
+function findPossibleManaCombinations(hybridManaCost) {
+    let nonHybridManaSymbol = ""
+    let hybridManaSymbols = []
+    let manaSymbols = hybridManaCost.split("{") // split at the beginning of each mana symbol
+    for (let manaSymbol of manaSymbols) {
+        if (manaSymbol !== "") { // the first mana symbol is "" because at the beginning there's a "{".
+            manaSymbol = "{" + manaSymbol
+            if (manaSymbol.includes("/")) {
+                hybridManaSymbols.push(manaSymbol)
+            } else {
+                nonHybridManaSymbol += manaSymbol
+            }
+        }
+    }
+
+    // what if there is no hybrid mana symbols?
+    if (hybridManaSymbols.length === 0) {
+        return [nonHybridManaSymbol]
+    } else {
+        // there should be 2**hybridManaSymbols.length possibilities. We can
+        // represent each of these possibilities by using a binary number, each
+        // digit corresponding to which of the two mana symbols to use
+        let possibilityNumBinary = []
+        for (let numCostsSoFar in hybridManaSymbols) { // just push one for
+            possibilityNumBinary.push(0)
+        }
+
+        let possibilities = []
+        for (let possibilityNum = 0; possibilityNum < 2 ** possibilityNumBinary.length;
+             possibilityNum++) { // iterate through every possibility
+            let possibility = nonHybridManaSymbol
+            for (let i = 0; i < hybridManaSymbols.length; i++) { // iterate through every hybrid mana cost piece
+                let hybridManaSymbol = hybridManaSymbols[i]
+                let twoSidesOfHybridManaCost = hybridManaSymbol.split("/")
+                if (possibilityNumBinary[i] === 0) {
+                    possibility += twoSidesOfHybridManaCost[0] + "}"
+                } else {
+                    possibility += "{" + twoSidesOfHybridManaCost[1]
+                }
+            }
+            possibilities.push(possibility)
+
+            // update the binary number
+            let carry = false
+            if (possibilityNumBinary[0] === 1) {
+                carry = true
+                possibilityNumBinary[0] = 0
+            } else {
+                possibilityNumBinary[0] = 1
+            }
+            for (let i = 1; i < possibilityNumBinary.length && carry; i++) {
+                if (possibilityNumBinary[i] === 1) {
+                    carry = true
+                    possibilityNumBinary[i] = 0
+                } else {
+                    carry = false
+                    possibilityNumBinary[i] = 1
+                }
+            }
+        }
+        return possibilities
+    }
 }
 
 // Who knows what you can or cannot cast without a function?
