@@ -164,6 +164,7 @@ function setup() {
     print(["{4}{U}", "{2}{U}{U}", "{4}{R}", "{2}{U}{R}",
         "{2}{U}{R}", "{U}{U}{R}", "{2}{R}{R}", "{U}{R}{R}"])
     print(["{R}", "{G}"])
+    print([""])
 }
 
 function filterInstantsAndFlashCards(cards) {
@@ -492,25 +493,38 @@ function storeAvailableCards() {
          selected!*/ !raritiesSelected[card['rarity']]) {
         } else {
             let cardCost = card['mana_cost']
-            let manaMinusUsed = {
-                'W': mana[0], // mana[0] = white mana
-                'U': mana[1], // mana[1] = blue mana
-                'B': mana[2], // mana[2] = black mana
-                'R': mana[3], // mana[3] = red mana
-                'G': mana[4]  // mana[4] = green mana
-            } // colorless mana is not included because we ignore numbers
+            print(cardCost)
 
-            let cannotCastCard = false
-            for (let char of cardCost) {
-                if (['W', 'U', 'B', 'R', 'G'] // characters to be selected
-                      .includes(char) && !cannotCastCard) {
-                    manaMinusUsed[char] -= 1 // char's gonna be W, U, B, R, or G
-                    if (manaMinusUsed[char] < 0) {
-                        cannotCastCard = true
+            let canCastCard = false
+            for (let possibility of findPossibleManaCombinations(cardCost)) {
+                print(possibility)
+                let manaMinusUsed = {
+                    'W': mana[0], // mana[0] = white mana
+                    'U': mana[1], // mana[1] = blue mana
+                    'B': mana[2], // mana[2] = black mana
+                    'R': mana[3], // mana[3] = red mana
+                    'G': mana[4]  // mana[4] = green mana
+                } // colorless mana is not included because we ignore numbers
+                for (let char of possibility) {
+                    if (['W', 'U', 'B', 'R', 'G'] // characters to be selected
+                        .includes(char)) {
+                        manaMinusUsed[char] -= 1 // char's gonna be W, U, B, R, or G
                     }
                 }
+                let canDoThisPossibility = true
+                for (let manaAmount in manaMinusUsed) { // warning: this starts out as the color
+                    manaAmount = manaMinusUsed[manaAmount]
+                    if (manaAmount < 0) {
+                        canDoThisPossibility = false
+                    }
+                }
+                if (canDoThisPossibility) {
+                    canCastCard = true
+                }
+                print(canDoThisPossibility, manaMinusUsed)
             }
-            if (!cannotCastCard) {
+            print("")
+            if (canCastCard) {
                 loadImage(card['image_uris']['png'],
                     data => {
                         loadImage(card['image_uris']['png'], data2 => {
