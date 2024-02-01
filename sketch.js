@@ -20,12 +20,14 @@ let redIcon
 let greenIcon
 let colorlessIcon
 let phyrexianIcon
+let goldIcon
 let whiteColor
 let blueColor
 let blackColor
 let redColor
 let greenColor
 let colorlessColor
+let goldColor
 let availableCardImages = {} // what cards can we cast?
 let raritiesSelected = { // the rarites that have been selected
     'common': true,
@@ -54,6 +56,7 @@ function preload() {
     greenIcon = loadImage('svg/g.svg')
     colorlessIcon = loadImage('svg/c.svg')
     phyrexianIcon = loadImage('svg/p.svg')
+    goldIcon = loadImage('svg/M.svg')
 }
 
 // paginates the data if necessary, then filters the instants and flash cards
@@ -102,7 +105,8 @@ function setup() {
                   "B": [0, 3, 47],
                   "R": [5, 80, 84],
                   "G": [155, 95, 71],
-                  "C": [240, 5, 87]}
+                  "C": [240, 5, 87],
+                  "M": [41, 40, 100]}
 
     whiteColor = new Color('White', whiteIcon, colors.W, 50, 50)
     blueColor = new Color('Blue', blueIcon, colors.U, 100, 50)
@@ -110,6 +114,7 @@ function setup() {
     redColor = new Color('Red', redIcon, colors.R, 200, 50)
     greenColor = new Color('Green', greenIcon, colors.G, 250, 50)
     colorlessColor = new Color('Colorless', colorlessIcon, colors.C, 300, 50)
+    goldColor = new Color('Gold', goldIcon, colors.M, 350, 50)
 
     // our debug corner
     debugCorner = new CanvasDebugCorner(5)
@@ -262,58 +267,7 @@ function draw() {
     redColor.draw()
     greenColor.draw()
     colorlessColor.draw()
-
-    // formatting: split between mana and rarities
-
-    fill(237, 37, 20, 50)
-    rect(345, 0, 355, 195)
-
-    // formatting: saying that it's rarity selection section
-    fill(100)
-    textFont(variableWidthFont)
-    stroke(100)
-    strokeWeight(0.5)
-    text('Rarity selection', 360, 25)
-
-    // common
-    fill(240, 10, 50)
-    if (!raritiesSelected['common']) {
-        fill(240, 12, 30)
-    }
-    noStroke()
-    rect(375, 50, 410, 85)
-    fill(60, 10, 70)
-    textSize(20)
-    text('C', 385, 75)
-
-    // uncommon
-    fill(240, 8, 100)
-    if (!raritiesSelected['uncommon']) {
-        fill(240, 8, 80)
-    }
-    rect(420, 50, 455, 85)
-    fill(60, 8, 40)
-    text('U', 430, 75)
-
-    // rare
-    fill(51, 45, 90)
-    if (!raritiesSelected['rare']) {
-        fill(51, 45, 60)
-    }
-    rect(465, 50, 500, 85)
-    fill(51, 100, 35)
-    text('R', 475, 75)
-
-    // mythic
-    fill(35, 57, 100)
-    if (!raritiesSelected['mythic']) {
-        fill(35, 57, 60)
-    }
-    rect(510, 50, 545, 85)
-    fill(35, 100, 36)
-    text('M', 520, 75)
-
-    textSize(14)
+    goldColor.draw()
 
     // formatting: split between cards able to be cast and mana symbols
     fill(237, 37, 20, 50)
