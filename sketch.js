@@ -12,7 +12,7 @@ let debugCorner /* output debug text in the bottom left corner of the canvas */
 // scryfall data url; BRO (the BROther's War)
 let url='https://api.scryfall.com/cards/search?q=set:mkm'
 let cards=[] /* data for the cards */
-let mana = [0,0,0,0,0,0] /* mana in WUBRG order, then colorless mana */
+let mana = [0,0,0,0,0,0,0] /* mana in WUBRG order, then colorless and multicolored mana */
 let whiteIcon
 let blueIcon
 let blackIcon
@@ -39,6 +39,15 @@ let cnv
 let rowsPrevious = 0
 let cardCMCsPrevious = 0
 let hoveringOverImage = false
+
+// where are all the colors?
+let colors = {"W": [59, 25, 95],
+    "U": [192, 40, 93],
+    "B": [0, 3, 47],
+    "R": [5, 80, 84],
+    "G": [155, 95, 71],
+    "C": [240, 5, 87],
+    "M": [41, 40, 100]}
 
 function preload() {
     font = loadFont('data/consola.ttf')
@@ -98,15 +107,8 @@ function setup() {
         <b>⚠ Do NOT press 'z' multiple times within a short time ⚠</b>
         </b></pre>`)
 
+
     // create all the Color functions
-    // where are all the colors?
-    let colors = {"W": [59, 25, 95],
-                  "U": [192, 40, 93],
-                  "B": [0, 3, 47],
-                  "R": [5, 80, 84],
-                  "G": [155, 95, 71],
-                  "C": [240, 5, 87],
-                  "M": [41, 40, 100]}
 
     whiteColor = new Color('White', whiteIcon, colors.W, 50, 50)
     blueColor = new Color('Blue', blueIcon, colors.U, 100, 50)
@@ -249,7 +251,7 @@ function draw() {
     let cardCMCs = 0
     let cardCMCSpacingHeight = 17
 
-    resizeCanvas(700, 335+rowsPrevious*rowHeight + cardCMCsPrevious*cardCMCSpacingHeight)
+    resizeCanvas(700, 435+rowsPrevious*rowHeight + cardCMCsPrevious*cardCMCSpacingHeight)
 
     background(234, 34, 24, 50)
 
@@ -266,21 +268,44 @@ function draw() {
     blackColor.draw()
     redColor.draw()
     greenColor.draw()
-    colorlessColor.draw()
     goldColor.draw()
+    colorlessColor.draw()
+
+
+    // prototype of hybrid colors
+    stroke(colors.W)
+    strokeWeight(2)
+    line(47, 238, 47, 197)
+    line(47, 197, 88, 197)
+    strokeWeight(1.45)
+    line(87, 197, 47, 237)
+    stroke(colors.U)
+    strokeWeight(2)
+    line(88, 197, 88, 238)
+    line(88, 238, 47, 238)
+    strokeWeight(1.45)
+    line(88, 198, 48, 238)
+    tint(colors.W)
+    image(whiteIcon, 50, 200, 18, 18)
+    tint(colors.U)
+    image(blueIcon, 67, 217, 18, 18)
+
+
+    noTint()
+    noStroke()
 
     // formatting: split between cards able to be cast and mana symbols
     fill(237, 37, 20, 50)
-    rect(0, 195, 700, 205)
+    rect(0, 295, 700, 305)
 
     strokeWeight(0.5)
     fill(100)
 
     // formatting: displaying that the next part is cards able to be cast
-    text('Cards able to be cast (press \'z\' to update)', 4, 225)
+    text('Cards able to be cast (press \'z\' to update)', 4, 325)
     noStroke()
     fill(237, 37, 20, 50)
-    rect(0, 229, 700, 233)
+    rect(0, 329, 700, 333)
 
     // used to define the position of the next card
     let col = 0
@@ -292,11 +317,11 @@ function draw() {
     for (let cardCMC in availableCardImages) {
         // mana symbol: circle + CMC
         fill(50)
-        ellipse(40, 260 + row*rowHeight + cardCMCs*cardCMCSpacingHeight, 30)
+        ellipse(40, 360 + row*rowHeight + cardCMCs*cardCMCSpacingHeight, 30)
         fill(100)
         stroke(100)
         textAlign(CENTER)
-        text(cardCMC, 40, 265 + row*rowHeight + cardCMCs*cardCMCSpacingHeight)
+        text(cardCMC, 40, 365 + row*rowHeight + cardCMCs*cardCMCSpacingHeight)
         col = 0
 
         for (let card of availableCardImages[cardCMC]) {
@@ -311,7 +336,7 @@ function draw() {
             }
 
             // changes the position of the card
-            card.changePos(-50 + col*colWidth, 240+(row)*rowHeight + cardCMCs*cardCMCSpacingHeight)
+            card.changePos(-50 + col*colWidth, 340+(row)*rowHeight + cardCMCs*cardCMCSpacingHeight)
 
             // make sure all the tricks are showed
             card.setShow(true)
@@ -324,7 +349,7 @@ function draw() {
 
         noStroke()
         fill(237, 37, 20, 50)
-        rect(-10, 225+row*rowHeight + cardCMCs*cardCMCSpacingHeight, 800, 235+row*rowHeight + cardCMCs*cardCMCSpacingHeight)
+        rect(-10, 325+row*rowHeight + cardCMCs*cardCMCSpacingHeight, 800, 335+row*rowHeight + cardCMCs*cardCMCSpacingHeight)
     }
 
     // now we have to find what card is overed over if there is. to do this
@@ -458,12 +483,17 @@ function storeAvailableCards() {
                     'U': mana[1], // mana[1] = blue mana
                     'B': mana[2], // mana[2] = black mana
                     'R': mana[3], // mana[3] = red mana
-                    'G': mana[4]  // mana[4] = green mana
+                    'G': mana[4], // mana[4] = green mana
+                    'M': mana[6]  // mana[6] = gold mana
                 } // colorless mana is not included because we ignore numbers
                 for (let char of possibility) {
                     if (['W', 'U', 'B', 'R', 'G'] // characters to be selected
                         .includes(char)) {
                         manaMinusUsed[char] -= 1 // char's gonna be W, U, B, R, or G
+                        if (manaMinusUsed[char] < 0) {
+                            manaMinusUsed[char] = 0
+                            manaMinusUsed["M"] -= 1
+                        }
                     }
                 }
                 let canDoThisPossibility = true
@@ -601,6 +631,14 @@ function printRemovedMana(color) {
             colorlessColor.decrement()
         }
     }
+    if (color === 'm') {
+        mana[6]--
+        if (mana[6] < 0) {
+            mana[6] = 0
+        } else {
+            goldColor.decrement()
+        }
+    }
 }
 
 function printAddedMana(color) {
@@ -646,6 +684,13 @@ function printAddedMana(color) {
             colorlessColor.increment()
         }
     }
+    if (color === 'm') {
+        if (mana[6] > 8) {
+        } else {
+            mana[6]++
+            goldColor.increment()
+        }
+    }
 }
 
 function mousePressed() {
@@ -662,8 +707,10 @@ function mousePressed() {
     let upperBoundGreenX = greenColor.xPosition + 35
     let lowerBoundColorlessX = colorlessColor.xPosition
     let upperBoundColorlessX = colorlessColor.xPosition + 35
+    let lowerBoundGoldX = goldColor.xPosition
+    let upperBoundGoldX = goldColor.xPosition + 35
 
-    // is it even in the row of colors and rarities?
+    // is it even in the row of colors?
     if (50 < mouseY && mouseY < 100) {
         // white
         if (lowerBoundWhiteX < mouseX && mouseX < upperBoundWhiteX) {
@@ -689,18 +736,9 @@ function mousePressed() {
         if (lowerBoundColorlessX < mouseX && mouseX < upperBoundColorlessX) {
             printAddedMana('c')
         }
-
-        // rarities!
-        if (50 < mouseY && mouseY < 100) {
-            if (375 < mouseX && mouseX < 410) {
-                raritiesSelected['common'] = !raritiesSelected['common']
-            } if (420 < mouseX && mouseX < 455) {
-                raritiesSelected['uncommon'] = !raritiesSelected['uncommon']
-            } if (465 < mouseX && mouseX < 500) {
-                raritiesSelected['rare'] = !raritiesSelected['rare']
-            } if (510 < mouseX && mouseX < 545) {
-                raritiesSelected['mythic'] = !raritiesSelected['mythic']
-            }
+        // gold
+        if (lowerBoundGoldX < mouseX && mouseX < upperBoundGoldX) {
+            printAddedMana('m')
         }
     }
 
