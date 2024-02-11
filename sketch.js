@@ -39,7 +39,16 @@ let cnv
 let rowsPrevious = 0
 let cardCMCsPrevious = 0
 let hoveringOverImage = false
-let doubleColorTest
+let azorius
+let dimir
+let rakdos
+let gruul
+let selesnya
+let orzhov
+let izzet
+let golgari
+let boros
+let simic
 
 // where are all the colors?
 let colors = {"W": [59, 25, 95],
@@ -118,8 +127,26 @@ function setup() {
     greenColor = new SingleColor('Green', greenIcon, colors.G, 250, 50)
     colorlessColor = new SingleColor('Colorless', colorlessIcon, colors.C, 300, 50)
     goldColor = new SingleColor('Gold', goldIcon, colors.M, 350, 50)
-    doubleColorTest = new DoubleColor(
-        'Azorious', whiteIcon, blueIcon, colors.W, colors.U, 50, 200)
+    azorius = new DoubleColor(
+        'Azorius', whiteIcon, blueIcon, colors.W, colors.U, 50, 200)
+    dimir = new DoubleColor(
+        'Dimir', blueIcon, blackIcon, colors.U, colors.B, 100, 200)
+    rakdos = new DoubleColor(
+        'Rakdos', blackIcon, redIcon, colors.B, colors.R, 150, 200)
+    gruul = new DoubleColor(
+        'Gruul', redIcon, greenIcon, colors.R, colors.G, 200, 200)
+    selesnya = new DoubleColor(
+        'Selesnya', greenIcon, whiteIcon, colors.G, colors.W, 250, 200)
+    orzhov = new DoubleColor(
+        'Orzhov', whiteIcon, blackIcon, colors.W, colors.B, 300, 200)
+    izzet = new DoubleColor(
+        'Izzet', blueIcon, redIcon, colors.U, colors.R, 350, 200)
+    golgari = new DoubleColor(
+        'Golgari', blackIcon, greenIcon, colors.B, colors.G, 400, 200)
+    boros = new DoubleColor(
+        'Boros', redIcon, whiteIcon, colors.R, colors.W, 450, 200)
+    simic = new DoubleColor(
+        'Simic', greenIcon, blueIcon, colors.G, colors.U, 500, 200)
 
     // our debug corner
     debugCorner = new CanvasDebugCorner(5)
@@ -273,7 +300,16 @@ function draw() {
     greenColor.draw()
     goldColor.draw()
     colorlessColor.draw()
-    doubleColorTest.draw()
+    azorius.draw()
+    dimir.draw()
+    rakdos.draw()
+    gruul.draw()
+    selesnya.draw()
+    orzhov.draw()
+    izzet.draw()
+    golgari.draw()
+    boros.draw()
+    simic.draw()
 
 
     // formatting: displaying that the next part is cards able to be cast
