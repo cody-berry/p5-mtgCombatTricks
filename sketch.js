@@ -39,6 +39,7 @@ let cnv
 let rowsPrevious = 0
 let cardCMCsPrevious = 0
 let hoveringOverImage = false
+let doubleColorTest
 
 // where are all the colors?
 let colors = {"W": [59, 25, 95],
@@ -110,13 +111,15 @@ function setup() {
 
     // create all the Color functions
 
-    whiteColor = new Color('White', whiteIcon, colors.W, 50, 50)
-    blueColor = new Color('Blue', blueIcon, colors.U, 100, 50)
-    blackColor = new Color('Black', blackIcon, colors.B, 150, 50)
-    redColor = new Color('Red', redIcon, colors.R, 200, 50)
-    greenColor = new Color('Green', greenIcon, colors.G, 250, 50)
-    colorlessColor = new Color('Colorless', colorlessIcon, colors.C, 300, 50)
-    goldColor = new Color('Gold', goldIcon, colors.M, 350, 50)
+    whiteColor = new SingleColor('White', whiteIcon, colors.W, 50, 50)
+    blueColor = new SingleColor('Blue', blueIcon, colors.U, 100, 50)
+    blackColor = new SingleColor('Black', blackIcon, colors.B, 150, 50)
+    redColor = new SingleColor('Red', redIcon, colors.R, 200, 50)
+    greenColor = new SingleColor('Green', greenIcon, colors.G, 250, 50)
+    colorlessColor = new SingleColor('Colorless', colorlessIcon, colors.C, 300, 50)
+    goldColor = new SingleColor('Gold', goldIcon, colors.M, 350, 50)
+    doubleColorTest = new DoubleColor(
+        'Azorious', whiteIcon, blueIcon, colors.W, colors.U, 50, 200)
 
     // our debug corner
     debugCorner = new CanvasDebugCorner(5)
@@ -270,65 +273,8 @@ function draw() {
     greenColor.draw()
     goldColor.draw()
     colorlessColor.draw()
+    doubleColorTest.draw()
 
-
-    // prototype of hybrid colors
-    stroke(colors.W)
-    strokeWeight(2)
-    line(47, 238, 47, 197)
-    line(47, 197, 88, 197)
-    strokeWeight(1.45)
-    line(87, 197, 47, 237)
-    stroke(colors.U)
-    strokeWeight(2)
-    line(88, 197, 88, 238)
-    line(88, 238, 47, 238)
-    strokeWeight(1.45)
-    line(88, 198, 48, 238)
-    tint(colors.W)
-    image(whiteIcon, 50, 200, 18, 18)
-    tint(colors.U)
-    image(blueIcon, 67, 217, 18, 18)
-    noTint()
-    noStroke()
-    fill(colors.W)
-    rect(45, 243, 68, 248, 3, 0, 0, 3)
-    fill(colors.U)
-    rect(67, 243, 90, 248, 0, 3, 3, 0)
-
-    noFill()
-    stroke(0, 0, 75)
-    rect(97, 238, 138, 197)
-    stroke(colors.U)
-    rect(97, 197, 116, 215)
-    stroke(colors.B)
-    rect(118, 197, 138, 215)
-    tint(colors.U)
-    image(blueIcon, 100, 199, 15, 15)
-    tint(colors.B)
-    image(blackIcon, 120, 199, 15, 15)
-    noTint()
-    noStroke()
-    fill(0, 0, 50)
-    rect(98, 216, 110, 237)
-    fill(0, 0, 0)
-    stroke(0, 0, 0)
-    strokeWeight(1)
-    line(98.5, 226.5, 109.5, 226.5)
-    noStroke()
-    textSize(10)
-    text("+", 99.7, 224.5)
-    text("-", 101.7, 235.5)
-    textSize(20)
-    fill(0, 0, 100)
-    text("9", 115, 234)
-
-    // formatting: split between cards able to be cast and mana symbols
-    fill(237, 37, 20, 50)
-    rect(0, 295, 700, 305)
-
-    strokeWeight(0.5)
-    fill(100)
 
     // formatting: displaying that the next part is cards able to be cast
     textSize(14)
@@ -870,8 +816,86 @@ class CanvasDebugCorner {
     }
 }
 
+/** defines a hybrid color and displays it using image() and svg files */
+class DoubleColor {
+    /* Argument definition:
+     * colorName → The prefix letter of the color
+     * colorSymbol → The SVG file that is displayed when draw() is called
+     * color → the color of the symbol that will be filled/tinted on draw()
+     * x/y → defines the position of the image when drawn on draw() */
+    constructor(colorName, colorSymbol1, colorSymbol2, color1, color2, x, y) {
+        this.color1 = color1
+        this.color2 = color2
+        this.colorName = colorName
+        this.colorSVGFile1 = colorSymbol1
+        this.colorSVGFile2 = colorSymbol2
+        this.xPosition = x
+        this.yPosition = y
+        /* the number of times the color has been selected */
+        this.numSelected = 0
+    }
+
+    /* Argument definition:
+     * NONE
+     * Function definition:
+     * Draws a little rectangle as a boundary, then displays both SVG files
+     * at the top and displays how much is on it */
+    draw() {
+
+        let xPos = this.xPosition // just make a shorter reference here
+        let yPos = this.yPosition // same here
+        let width = 35 // the width of the symbol
+        let height = 35 // the height of the symbol
+        let padding = width/10 // the outer padding
+
+        // display the outer grey rectangle
+        noFill()
+        stroke(0, 0, 75)
+        strokeWeight(1.5)
+        rect(xPos - padding, yPos - padding, xPos + width + padding, yPos + height + padding)
+
+        // now draw the color symbols with  their rectangle
+        stroke(this.color1)
+        rect(xPos - padding, yPos - padding, xPos + width/2, yPos + height/2)
+        stroke(this.color2)
+        rect(xPos + width/2, yPos - padding, xPos + width + padding, yPos + height/2)
+        tint(this.color1)
+        image(this.colorSVGFile1, xPos, yPos, width/2 - padding, height/2 - padding)
+        tint(this.color2)
+        image(this.colorSVGFile2, xPos + width/2 + padding, yPos, width/2 - padding, height/2 - padding)
+
+        // now display the + and - symbols (used for clicking)
+        noTint()
+        noStroke()
+        fill(0, 0, 50)
+        rect(xPos - padding, yPos + height/2, xPos + width/3, yPos + height + padding)
+        fill(0, 0, 25)
+        fill(0, 0, 0)
+        stroke(0, 0, 0)
+        strokeWeight(1)
+        line(xPos - padding, yPos + 3*height/4 + padding, xPos + width/3, yPos + 3*height/4 + padding)
+        noStroke()
+        textSize(10)
+        text("+", xPos, yPos + 3*height/4)
+        text("-", xPos + padding/2, yPos + height + padding/2) // - has less textwidth than +!
+        textSize(20)
+        fill(0, 0, 100)
+        text(this.numSelected, xPos + width/2, yPos + height)
+    }
+
+    /* Nothing to describe */
+    increment() {
+        this.numSelected++
+    }
+
+    /* Nothing to describe */
+    decrement() {
+        this.numSelected--
+    }
+}
+
 /** defines a color and displays it using image() and svg files */
-class Color {
+class SingleColor {
     /* Argument definition:
      * colorName → The prefix letter of the color
      * colorSymbol → The SVG file that is displayed when draw() is called
