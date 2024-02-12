@@ -99,6 +99,7 @@ function setup() {
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
 
+
     /* initialize instruction div */
     instructions = select('#ins')
     instructions.html(`<pre>
@@ -119,7 +120,6 @@ function setup() {
 
 
     // create all the Color functions
-
     whiteColor = new SingleColor('White', whiteIcon, colors.W, 50, 50)
     blueColor = new SingleColor('Blue', blueIcon, colors.U, 100, 50)
     blackColor = new SingleColor('Black', blackIcon, colors.B, 150, 50)
@@ -587,14 +587,14 @@ function keyPressed() {
     let lowercaseKey = redefinedKey.toLowerCase()
     if (lowercaseKey === key) {
         /* remove the specified mana */
-        printRemovedMana(lowercaseKey)
+        removeMana(lowercaseKey)
     } else {
         /* add the specified mana */
-        printAddedMana(lowercaseKey)
+        addMana(lowercaseKey)
     }
 }
 
-function printRemovedMana(color) {
+function removeMana(color) {
     if (color === 'w') {
         mana[0]--
         if (mana[0] < 0) {
@@ -653,7 +653,7 @@ function printRemovedMana(color) {
     }
 }
 
-function printAddedMana(color) {
+function addMana(color) {
     if (color === 'w') {
         if (mana[0] > 8) {
         } else {
@@ -722,36 +722,79 @@ function mousePressed() {
     let lowerBoundGoldX = goldColor.xPosition
     let upperBoundGoldX = goldColor.xPosition + 35
 
-    // is it even in the row of colors?
-    if (50 < mouseY && mouseY < 100) {
-        // white
-        if (lowerBoundWhiteX < mouseX && mouseX < upperBoundWhiteX) {
-            printAddedMana('w')
-        }
-        // blue
-        if (lowerBoundBlueX < mouseX && mouseX < upperBoundBlueX) {
-            printAddedMana('u')
-        }
-        // black
-        if (lowerBoundBlackX < mouseX && mouseX < upperBoundBlackX) {
-            printAddedMana('b')
-        }
-        // red
-        if (lowerBoundRedX < mouseX && mouseX < upperBoundRedX) {
-            printAddedMana('r')
-        }
-        // green
-        if (lowerBoundGreenX < mouseX && mouseX < upperBoundGreenX) {
-            printAddedMana('g')
-        }
-        // colorless
-        if (lowerBoundColorlessX < mouseX && mouseX < upperBoundColorlessX) {
-            printAddedMana('c')
-        }
-        // gold
-        if (lowerBoundGoldX < mouseX && mouseX < upperBoundGoldX) {
-            printAddedMana('m')
-        }
+
+    let lowerBoundAzoriusX = azorius.xPosition
+    let upperBoundAzoriusX = azorius.xPosition + 11
+    let lowerBoundDimirX = dimir.xPosition
+    let upperBoundDimirX = dimir.xPosition + 11
+    let lowerBoundRakdosX = rakdos.xPosition
+    let upperBoundRakdosX = rakdos.xPosition + 11
+    let lowerBoundGruulX = gruul.xPosition
+    let upperBoundGruulX = gruul.xPosition + 11
+    let lowerBoundSelesnyaX = selesnya.xPosition
+    let upperBoundSelesnyaX = selesnya.xPosition + 11
+    let lowerBoundOrzhovX = orzhov.xPosition
+    let upperBoundOrzhovX = orzhov.xPosition + 11
+    let lowerBoundIzzetX = izzet.xPosition
+    let upperBoundIzzetX = izzet.xPosition + 11
+    let lowerBoundGolgariX = golgari.xPosition
+    let upperBoundGolgariX = golgari.xPosition + 11
+    let lowerBoundBorosX = boros.xPosition
+    let upperBoundBorosX = boros.xPosition + 11
+    let lowerBoundSimicX = simic.xPosition
+    let upperBoundSimicX = simic.xPosition + 11
+
+    // check if it's in one of the rows of colors
+    if (50 < mouseY && mouseY < 85) { // single color
+        if (lowerBoundWhiteX < mouseX && mouseX < upperBoundWhiteX) addMana('w')
+        if (lowerBoundBlueX < mouseX && mouseX < upperBoundBlueX) addMana('u')
+        if (lowerBoundBlackX < mouseX && mouseX < upperBoundBlackX) addMana('b')
+        if (lowerBoundRedX < mouseX && mouseX < upperBoundRedX) addMana('r')
+        if (lowerBoundGreenX < mouseX && mouseX < upperBoundGreenX) addMana('g')
+        if (lowerBoundColorlessX < mouseX && mouseX < upperBoundColorlessX) addMana('c')
+        if (lowerBoundGoldX < mouseX && mouseX < upperBoundGoldX) addMana('m')
+    } if (217 < mouseY && mouseY < 228) { // double color increment
+        if (lowerBoundAzoriusX < mouseX && mouseX < upperBoundAzoriusX && azorius.numSelected < 9)
+            azorius.increment()
+        if (lowerBoundDimirX < mouseX && mouseX < upperBoundDimirX && dimir.numSelected < 9)
+            dimir.increment()
+        if (lowerBoundRakdosX < mouseX && mouseX < upperBoundRakdosX && rakdos.numSelected < 9)
+            rakdos.increment()
+        if (lowerBoundGruulX < mouseX && mouseX < upperBoundGruulX && gruul.numSelected < 9)
+            gruul.increment()
+        if (lowerBoundSelesnyaX < mouseX && mouseX < upperBoundSelesnyaX && selesnya.numSelected < 9)
+            selesnya.increment()
+        if (lowerBoundOrzhovX < mouseX && mouseX < upperBoundOrzhovX && orzhov.numSelected < 9)
+            orzhov.increment()
+        if (lowerBoundIzzetX < mouseX && mouseX < upperBoundIzzetX && izzet.numSelected < 9)
+            izzet.increment()
+        if (lowerBoundGolgariX < mouseX && mouseX < upperBoundGolgariX && golgari.numSelected < 9)
+            golgari.increment()
+        if (lowerBoundBorosX < mouseX && mouseX < upperBoundBorosX && boros.numSelected < 9)
+            boros.increment()
+        if (lowerBoundSimicX < mouseX && mouseX < upperBoundSimicX && simic.numSelected < 9)
+            simic.increment()
+    } if (228 < mouseY && mouseY < 236) { // double color decrement
+        if (lowerBoundAzoriusX < mouseX && mouseX < upperBoundAzoriusX && azorius.numSelected > 0)
+            azorius.decrement()
+        if (lowerBoundDimirX < mouseX && mouseX < upperBoundDimirX && dimir.numSelected > 0)
+            dimir.decrement()
+        if (lowerBoundRakdosX < mouseX && mouseX < upperBoundRakdosX && rakdos.numSelected > 0)
+            rakdos.decrement()
+        if (lowerBoundGruulX < mouseX && mouseX < upperBoundGruulX && gruul.numSelected > 0)
+            gruul.decrement()
+        if (lowerBoundSelesnyaX < mouseX && mouseX < upperBoundSelesnyaX && selesnya.numSelected > 0)
+            selesnya.decrement()
+        if (lowerBoundOrzhovX < mouseX && mouseX < upperBoundOrzhovX && orzhov.numSelected > 0)
+            orzhov.decrement()
+        if (lowerBoundIzzetX < mouseX && mouseX < upperBoundIzzetX && izzet.numSelected > 0)
+            izzet.decrement()
+        if (lowerBoundGolgariX < mouseX && mouseX < upperBoundGolgariX && golgari.numSelected > 0)
+            golgari.decrement()
+        if (lowerBoundBorosX < mouseX && mouseX < upperBoundBorosX && boros.numSelected > 0)
+            boros.decrement()
+        if (lowerBoundSimicX < mouseX && mouseX < upperBoundSimicX && simic.numSelected > 0)
+            simic.decrement()
     }
 
     for (let cardCMC in availableCardImages) {
@@ -877,7 +920,6 @@ class DoubleColor {
      * Draws a little rectangle as a boundary, then displays both SVG files
      * at the top and displays how much is on it */
     draw() {
-
         let xPos = this.xPosition // just make a shorter reference here
         let yPos = this.yPosition // same here
         let width = 35 // the width of the symbol
@@ -890,7 +932,7 @@ class DoubleColor {
         strokeWeight(1.5)
         rect(xPos - padding, yPos - padding, xPos + width + padding, yPos + height + padding)
 
-        // now draw the color symbols with  their rectangle
+        // now draw the color symbols with their rectangle
         stroke(this.color1)
         rect(xPos - padding, yPos - padding, xPos + width/2, yPos + height/2)
         stroke(this.color2)
@@ -905,7 +947,21 @@ class DoubleColor {
         noStroke()
         fill(0, 0, 50)
         rect(xPos - padding, yPos + height/2, xPos + width/3, yPos + height + padding)
-        fill(0, 0, 25)
+        fill(0, 0, 45)
+        // if you're hovering over any part of it, make sure to darken it slightly!
+        if (mouseX > xPos - padding && mouseX < xPos + width/3 &&
+            mouseY > yPos + height/2 && mouseY < yPos + 3*height/4 + padding)
+            rect(xPos - padding, yPos + height/2, xPos + width/3, yPos + 3*height/4 + padding)
+        if (mouseX > xPos - padding && mouseX < xPos + width/3 &&
+            mouseY > yPos + 3*height/4 + padding && mouseY < yPos + height + padding)
+            rect(xPos - padding, yPos + 3*height/4 + padding, xPos + width/3, yPos + height + padding)
+        // if any of those are not applicable, make sure to darken it!
+        fill(0, 0, 30)
+        if (this.numSelected === 9) {
+            rect(xPos - padding, yPos + height/2, xPos + width/3, yPos + 3*height/4 + padding)
+        } if (this.numSelected === 0) {
+            rect(xPos - padding, yPos + 3*height/4 + padding, xPos + width/3, yPos + height + padding)
+        }
         fill(0, 0, 0)
         stroke(0, 0, 0)
         strokeWeight(1)
