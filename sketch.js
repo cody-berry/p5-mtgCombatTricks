@@ -11,7 +11,8 @@ let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 // scryfall data url; BRO (the BROther's War)
 let url='https://api.scryfall.com/cards/search?q=set:mkm'
-let cards=[] /* data for the cards */
+let instantsAndFlashCards=[] /* data for the instant and flash cards */
+let disguiseCards=[] /* data for the disguise cards */
 let mana = [0,0,0,0,0,0,0] /* mana in WUBRG order, then colorless and multicolored mana */
 let whiteIcon
 let blueIcon
@@ -78,14 +79,18 @@ function preload() {
     goldIcon = loadImage('svg/M.svg')
 }
 
+
+
 // paginates the data if necessary, then filters the instants and flash cards
 function printAndPaginateData(data) {
     let currentCards = data['data']
 
-    currentCards = filterInstantsAndFlashCards(currentCards)
+    let instantsAndFlashCardsUnpaginated = filterInstantsAndFlashCards(currentCards)
+    let disguiseCardsUnpaginated = filterDisguiseCards(currentCards)
 
     // add the data to the json
-    cards = [ ...cards, ...currentCards] /* spread operator: ... */
+    instantsAndFlashCards = [ ...instantsAndFlashCards, ...instantsAndFlashCardsUnpaginated] /* spread operator: ... */
+    disguiseCards = [ ...disguiseCards, ...disguiseCardsUnpaginated] /* spread operator: ... */
 
     if (data['has_more']) {
         loadJSON(data['next_page'], printAndPaginateData)
@@ -205,6 +210,43 @@ function setup() {
     print([""])
 }
 
+function filterDisguiseCards(cards) {
+    let resultingCardList = []
+    for (let card of cards) {
+        // if the opponent has a face down morph/disguise creature, it
+        // each disguise creature is a combat trick.
+        if (card['keywords'].includes('Disguise')) {
+            // we have to edit the cost to match the disguise cost!
+            let oracleTextStartingFromDisguiseCost = card["oracle_text"].substring(
+                card["oracle_text"].indexOf("Disguise {") + 9)
+            let disguiseCost = oracleTextStartingFromDisguiseCost.substring(
+                0, oracleTextStartingFromDisguiseCost.indexOf(" "))
+
+            // this only triggers if oracleTextStartingFromDisguiseCost
+            // has no space, meaning that it's Disguise {mana cost}
+            // with no reminder text or anything oracle text following
+            if (disguiseCost === "") {
+                disguiseCost = oracleTextStartingFromDisguiseCost
+            }
+
+            // sometimes the disguise cost will have an extra "\nwhen" or
+            // "." at the end
+            if (disguiseCost[disguiseCost.length - 1] === ".") {
+                disguiseCost = disguiseCost.substring(0, disguiseCost.length - 1)
+            }
+            if (disguiseCost[disguiseCost.length - 1] === "n") {
+                disguiseCost = disguiseCost.substring(0, disguiseCost.length - 4)
+            }
+
+            card["mana_cost"] = disguiseCost
+            card["cmc"] = calculateCMC(disguiseCost)
+
+            resultingCardList.push(card)
+        }
+    }
+    return resultingCardList
+}
+
 function filterInstantsAndFlashCards(cards) {
     // instants and flash cards
     let resultingCardList = []
@@ -240,35 +282,6 @@ function filterInstantsAndFlashCards(cards) {
                 // it may also be a combat trick if the card keywords includes
                 // Flash. For example, in BRO, Zephyr Sentinel or Ambush Paratrooper.
                 if (card['keywords'].includes('Flash')) {
-                    resultingCardList.push(card)
-                }
-                // if the opponent has a face down morph/disguise creature, it
-                // each disguise creature is a combat trick.
-                if (card['keywords'].includes('Disguise')) {
-                    // we have to edit the cost to match the disguise cost!
-                    let oracleTextStartingFromDisguiseCost = card["oracle_text"].substring(
-                        card["oracle_text"].indexOf("Disguise {") + 9)
-                    let disguiseCost = oracleTextStartingFromDisguiseCost.substring(
-                        0, oracleTextStartingFromDisguiseCost.indexOf(" "))
-
-                    // this only triggers if oracleTextStartingFromDisguiseCost
-                    // has no space, meaning that it's Disguise {mana cost}
-                    // with no reminder text or anything oracle text following
-                    if (disguiseCost === "") {
-                        disguiseCost = oracleTextStartingFromDisguiseCost
-                    }
-
-                    // sometimes the disguise cost will have an extra "\nwhen" or
-                    // "." at the end
-                    if (disguiseCost[disguiseCost.length - 1] === ".") {
-                        disguiseCost = disguiseCost.substring(0, disguiseCost.length - 1)
-                    } if (disguiseCost[disguiseCost.length - 1] === "n") {
-                        disguiseCost = disguiseCost.substring(0, disguiseCost.length - 4)
-                    }
-
-                    card["mana_cost"] = disguiseCost
-                    card["cmc"] = calculateCMC(disguiseCost)
-
                     resultingCardList.push(card)
                 }
             }
@@ -603,6 +616,8 @@ function storeAvailableCards() {
     let manaAvailable = sum(
         [azoriusNum, dimirNum, rakdosNum, gruulNum, selesnyaNum,
             orzhovNum, izzetNum, golgariNum, borosNum, simicNum]) + sum(mana)
+
+    let cards = [...instantsAndFlashCards, ...disguiseCards]
 
     for (let card of cards) {
         let genericManaOmitted = 0
