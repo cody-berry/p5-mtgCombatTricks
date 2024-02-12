@@ -187,7 +187,7 @@ function setup() {
     print("")
     print("Outputs:")
     for (let manaCost of manaCosts) {
-        print(findPossibleManaCombinations(manaCost))
+        print(findPossibleManaCostCombinations(manaCost))
     }
     print("")
     print("Expected outputs:")
@@ -381,12 +381,115 @@ function draw() {
 
     /* debugCorner needs to be last so its z-index is highest */
     debugCorner.setText(`frameCount: ${frameCount}`, 2)
-        debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
+    debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
     debugCorner.showBottom()
 }
 
+// return a list of possible mana available according to the amount of hybrid mana.
+// Warning: This doesn't include the original mana.
+function findPossibleManaAvailableCombinations() {
+    // let's start by making shorter references to the hybrid mana selected.
+    let azoriusNum = azorius.numSelected
+    let dimirNum = dimir.numSelected
+    let rakdosNum = rakdos.numSelected
+    let gruulNum = gruul.numSelected
+    let selesnyaNum = selesnya.numSelected
+    let orzhovNum = orzhov.numSelected
+    let izzetNum = izzet.numSelected
+    let golgariNum = golgari.numSelected
+    let borosNum = boros.numSelected
+    let simicNum = simic.numSelected
+
+    let numHybridMana = sum(
+        [azoriusNum, dimirNum, rakdosNum, gruulNum, selesnyaNum,
+         orzhovNum, izzetNum, golgariNum, borosNum, simicNum])
+
+    // we do the same thing as in findPossibleManaCostCombinations: add a
+    // binary number representing each hybrid mana
+    let possibilityNumBinary = []
+    for (let i = 0; i < numHybridMana; i++) {
+        possibilityNumBinary.push(0)
+    }
+
+    let possibilities = []
+    for (let i = 0; i < 2**numHybridMana; i++) {
+        let possibility = {
+            "W": 0,
+            "U": 0,
+            "B": 0,
+            "R": 0,
+            "G": 0
+        }
+        let hybridManaNum = 0
+
+        // now we just iterate through each color pair
+        for (let i = 0; i < azoriusNum; i++) {
+            if (possibilityNumBinary[hybridManaNum] === 0) possibility["W"]++
+            else possibility["U"]++
+            hybridManaNum++
+        } for (let i = 0; i < dimirNum; i++) {
+            if (possibilityNumBinary[hybridManaNum] === 0) possibility["U"]++
+            else possibility["B"]++
+            hybridManaNum++
+        } for (let i = 0; i < rakdosNum; i++) {
+            if (possibilityNumBinary[hybridManaNum] === 0) possibility["B"]++
+            else possibility["R"]++
+            hybridManaNum++
+        } for (let i = 0; i < gruulNum; i++) {
+            if (possibilityNumBinary[hybridManaNum] === 0) possibility["R"]++
+            else possibility["G"]++
+            hybridManaNum++
+        } for (let i = 0; i < selesnyaNum; i++) {
+            if (possibilityNumBinary[hybridManaNum] === 0) possibility["G"]++
+            else possibility["W"]++
+            hybridManaNum++
+        } for (let i = 0; i < orzhovNum; i++) {
+            if (possibilityNumBinary[hybridManaNum] === 0) possibility["W"]++
+            else possibility["B"]++
+            hybridManaNum++
+        } for (let i = 0; i < izzetNum; i++) {
+            if (possibilityNumBinary[hybridManaNum] === 0) possibility["U"]++
+            else possibility["R"]++
+            hybridManaNum++
+        } for (let i = 0; i < golgariNum; i++) {
+            if (possibilityNumBinary[hybridManaNum] === 0) possibility["B"]++
+            else possibility["G"]++
+            hybridManaNum++
+        } for (let i = 0; i < borosNum; i++) {
+            if (possibilityNumBinary[hybridManaNum] === 0) possibility["R"]++
+            else possibility["W"]++
+            hybridManaNum++
+        } for (let i = 0; i < simicNum; i++) {
+            if (possibilityNumBinary[hybridManaNum] === 0) possibility["G"]++
+            else possibility["U"]++
+            hybridManaNum++
+        }
+
+        // update the binary number
+        let carry = false
+        if (possibilityNumBinary[0] === 1) {
+            carry = true
+            possibilityNumBinary[0] = 0
+        } else {
+            possibilityNumBinary[0] = 1
+        }
+        for (let i = 1; i < possibilityNumBinary.length && carry; i++) {
+            if (possibilityNumBinary[i] === 1) {
+                carry = true
+                possibilityNumBinary[i] = 0
+            } else {
+                carry = false
+                possibilityNumBinary[i] = 1
+            }
+        }
+
+        possibilities.push(possibility)
+    }
+    return possibilities
+}
+
 // return a list of possible mana costs for a hybrid mana cost
-function findPossibleManaCombinations(hybridManaCost) {
+function findPossibleManaCostCombinations(hybridManaCost) {
     let nonHybridManaSymbol = ""
     let hybridManaSymbols = []
     let manaSymbols = hybridManaCost.split("{") // split at the beginning of each mana symbol
@@ -488,7 +591,7 @@ function storeAvailableCards() {
             print(cardCost)
 
             let canCastCard = false
-            for (let possibility of findPossibleManaCombinations(cardCost)) {
+            for (let possibility of findPossibleManaCostCombinations(cardCost)) {
                 print(possibility)
                 let manaMinusUsed = {
                     'W': mana[0], // mana[0] = white mana
@@ -978,11 +1081,13 @@ class DoubleColor {
     /* Nothing to describe */
     increment() {
         this.numSelected++
+        print(findPossibleManaAvailableCombinations())
     }
 
     /* Nothing to describe */
     decrement() {
         this.numSelected--
+        print(findPossibleManaAvailableCombinations())
     }
 }
 
