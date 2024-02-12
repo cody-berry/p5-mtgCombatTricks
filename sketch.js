@@ -245,6 +245,30 @@ function filterInstantsAndFlashCards(cards) {
                 // if the opponent has a face down morph/disguise creature, it
                 // each disguise creature is a combat trick.
                 if (card['keywords'].includes('Disguise')) {
+                    // we have to edit the cost to match the disguise cost!
+                    let oracleTextStartingFromDisguiseCost = card["oracle_text"].substring(
+                        card["oracle_text"].indexOf("Disguise {") + 9)
+                    let disguiseCost = oracleTextStartingFromDisguiseCost.substring(
+                        0, oracleTextStartingFromDisguiseCost.indexOf(" "))
+
+                    // this only triggers if oracleTextStartingFromDisguiseCost
+                    // has no space, meaning that it's Disguise {mana cost}
+                    // with no reminder text or anything oracle text following
+                    if (disguiseCost === "") {
+                        disguiseCost = oracleTextStartingFromDisguiseCost
+                    }
+
+                    // sometimes the disguise cost will have an extra "\nwhen" or
+                    // "." at the end
+                    if (disguiseCost[disguiseCost.length - 1] === ".") {
+                        disguiseCost = disguiseCost.substring(0, disguiseCost.length - 1)
+                    } if (disguiseCost[disguiseCost.length - 1] === "n") {
+                        disguiseCost = disguiseCost.substring(0, disguiseCost.length - 4)
+                    }
+
+                    card["mana_cost"] = disguiseCost
+                    card["cmc"] = calculateCMC(disguiseCost)
+
                     resultingCardList.push(card)
                 }
             }
