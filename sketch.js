@@ -557,6 +557,24 @@ function findPossibleManaCostCombinations(hybridManaCost) {
 function storeAvailableCards() {
     availableCardImages = {} // the available cards in a dictionary with keys
                              // of cmc's and values of a list of card images
+    let hybridManaPossibilities = findPossibleManaAvailableCombinations()
+
+    // find out the amount of mana availablee
+    let azoriusNum = azorius.numSelected
+    let dimirNum = dimir.numSelected
+    let rakdosNum = rakdos.numSelected
+    let gruulNum = gruul.numSelected
+    let selesnyaNum = selesnya.numSelected
+    let orzhovNum = orzhov.numSelected
+    let izzetNum = izzet.numSelected
+    let golgariNum = golgari.numSelected
+    let borosNum = boros.numSelected
+    let simicNum = simic.numSelected
+
+    let manaAvailable = sum(
+        [azoriusNum, dimirNum, rakdosNum, gruulNum, selesnyaNum,
+            orzhovNum, izzetNum, golgariNum, borosNum, simicNum]) + sum(mana)
+
     for (let card of cards) {
         let genericManaOmitted = 0
         let cardCMC = card['cmc']
@@ -579,7 +597,7 @@ function storeAvailableCards() {
             }
         }
 
-        if (cardCMC - genericManaOmitted > sum(mana)) {
+        if (cardCMC - genericManaOmitted > manaAvailable) {
             if (card["oracle_text"].indexOf("Convoke") === -1) {
                 continue
             }
@@ -588,42 +606,40 @@ function storeAvailableCards() {
          selected!*/ !raritiesSelected[card['rarity']]) {
         } else {
             let cardCost = card['mana_cost']
-            print(cardCost)
 
             let canCastCard = false
-            for (let possibility of findPossibleManaCostCombinations(cardCost)) {
-                print(possibility)
-                let manaMinusUsed = {
-                    'W': mana[0], // mana[0] = white mana
-                    'U': mana[1], // mana[1] = blue mana
-                    'B': mana[2], // mana[2] = black mana
-                    'R': mana[3], // mana[3] = red mana
-                    'G': mana[4], // mana[4] = green mana
-                    'M': mana[6]  // mana[6] = gold mana
-                } // colorless mana is not included because we ignore numbers
-                for (let char of possibility) {
-                    if (['W', 'U', 'B', 'R', 'G'] // characters to be selected
-                        .includes(char)) {
-                        manaMinusUsed[char] -= 1 // char's gonna be W, U, B, R, or G
-                        if (manaMinusUsed[char] < 0) {
-                            manaMinusUsed[char] = 0
-                            manaMinusUsed["M"] -= 1
+            for (let cost of findPossibleManaCostCombinations(cardCost)) {
+                for (let hybridLandRepresentation of hybridManaPossibilities) {
+                    let manaMinusUsed = {
+                        'W': mana[0] + hybridLandRepresentation["W"], // mana[0] = white mana
+                        'U': mana[1] + hybridLandRepresentation["U"], // mana[1] = blue mana
+                        'B': mana[2] + hybridLandRepresentation["B"], // mana[2] = black mana
+                        'R': mana[3] + hybridLandRepresentation["R"], // mana[3] = red mana
+                        'G': mana[4] + hybridLandRepresentation["G"], // mana[4] = green mana
+                        'M': mana[6]  // mana[6] = gold mana
+                    } // colorless mana is not included because we ignore numbers
+                    for (let char of cost) {
+                        if (['W', 'U', 'B', 'R', 'G'] // characters to be selected
+                            .includes(char)) {
+                            manaMinusUsed[char] -= 1 // char's gonna be W, U, B, R, or G
+                            if (manaMinusUsed[char] < 0) {
+                                manaMinusUsed[char] = 0
+                                manaMinusUsed["M"] -= 1
+                            }
                         }
                     }
-                }
-                let canDoThisPossibility = true
-                for (let manaAmount in manaMinusUsed) { // warning: this starts out as the color
-                    manaAmount = manaMinusUsed[manaAmount]
-                    if (manaAmount < 0) {
-                        canDoThisPossibility = false
+                    let canDoThisPossibility = true
+                    for (let manaAmount in manaMinusUsed) { // warning: this starts out as the color
+                        manaAmount = manaMinusUsed[manaAmount]
+                        if (manaAmount < 0) {
+                            canDoThisPossibility = false
+                        }
+                    }
+                    if (canDoThisPossibility) {
+                        canCastCard = true
                     }
                 }
-                if (canDoThisPossibility) {
-                    canCastCard = true
-                }
-                print(canDoThisPossibility, manaMinusUsed)
             }
-            print("")
             if (canCastCard) {
                 loadImage(card['image_uris']['png'],
                     data => {
