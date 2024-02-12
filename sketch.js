@@ -242,6 +242,11 @@ function filterInstantsAndFlashCards(cards) {
                 if (card['keywords'].includes('Flash')) {
                     resultingCardList.push(card)
                 }
+                // if the opponent has a face down morph/disguise creature, it
+                // each disguise creature is a combat trick.
+                if (card['keywords'].includes('Disguise')) {
+                    resultingCardList.push(card)
+                }
             }
         }
     }
