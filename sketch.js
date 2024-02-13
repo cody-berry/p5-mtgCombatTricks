@@ -778,12 +778,6 @@ function keyPressed() {
         return
     }
 
-    if (key === 'z') { /* store, then show in draw(), all the cards that can
-                          be cast*/
-        storeAvailableCards()
-        return
-    }
-
     let redefinedKey = key.toString()
     let lowercaseKey = redefinedKey.toLowerCase()
     if (lowercaseKey === key) {
@@ -795,10 +789,17 @@ function keyPressed() {
     }
 
     // press "d" to toggle whether disguise tricks are displayed or not
-    if (key === 'd') displayDisguise = !displayDisguise
+    // this also automatically updates for you
+    if (key === 'd') {
+        displayDisguise = !displayDisguise
+        storeAvailableCards()
+    }
 
     // same for tricks, except it's "t" for instants and flash cards
-    if (key === 't') displayTricks = !displayTricks
+    if (key === 't') {
+        displayTricks = !displayTricks
+        storeAvailableCards()
+    }
 }
 
 function removeMana(color) {
@@ -1185,13 +1186,13 @@ class DoubleColor {
     /* Nothing to describe */
     increment() {
         this.numSelected++
-        print(findPossibleManaAvailableCombinations())
+        storeAvailableCards() // Automatically update!
     }
 
     /* Nothing to describe */
     decrement() {
         this.numSelected--
-        print(findPossibleManaAvailableCombinations())
+        storeAvailableCards() // Automatically update!
     }
 }
 
@@ -1236,11 +1237,13 @@ class SingleColor {
     /* Nothing to describe */
     increment() {
         this.numSelected++
+        storeAvailableCards() // Automatically update!
     }
 
     /* Nothing to describe */
     decrement() {
         this.numSelected--
+        storeAvailableCards() // Automatically update!
     }
 }
 
