@@ -649,7 +649,13 @@ function storeAvailableCards() {
         [azoriusNum, dimirNum, rakdosNum, gruulNum, selesnyaNum,
             orzhovNum, izzetNum, golgariNum, borosNum, simicNum]) + sum(mana)
 
-    let cards = [...instantsAndFlashCards, ...disguiseCards]
+    // if tricks are displayed start the total cards we need to check off with
+    // the tricks. otherwise it's an empty list
+    let cards = (displayTricks) ? instantsAndFlashCards : []
+
+    // if the disguise creatures are displayed, extend the list using the
+    // spread operator
+    cards = (displayDisguise) ? [...cards, ...disguiseCards] : cards
 
     for (let card of cards) {
         let genericManaOmitted = 0
@@ -787,6 +793,12 @@ function keyPressed() {
         /* add the specified mana */
         addMana(lowercaseKey)
     }
+
+    // press "d" to toggle whether disguise tricks are displayed or not
+    if (key === 'd') displayDisguise = !displayDisguise
+
+    // same for tricks, except it's "t" for instants and flash cards
+    if (key === 't') displayTricks = !displayTricks
 }
 
 function removeMana(color) {
