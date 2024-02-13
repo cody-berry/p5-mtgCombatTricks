@@ -51,6 +51,9 @@ let golgari
 let boros
 let simic
 
+let displayTricks = true
+let displayDisguise = false
+
 // where are all the colors?
 let colors = {"W": [59, 25, 95],
     "U": [192, 40, 93],
@@ -328,11 +331,14 @@ function draw() {
     background(234, 34, 24, 50)
 
     // formatting: displaying it's mana selection
-    fill(100)
+    fill(0, 0, 100)
     textFont(variableWidthFont)
-    stroke(100)
+    stroke(0, 0, 100)
     strokeWeight(0.5)
-    text('Mana selection', 4, 25)
+    text('Mana selection', 40, 25)
+    erase()
+    rect(0, 0, 30, 309)
+    noErase()
 
     // draw all the Color classes each frame
     whiteColor.draw()
@@ -353,13 +359,38 @@ function draw() {
     boros.draw()
     simic.draw()
 
+    // formatting: draw lines between mana selection and trick display buttons
+    erase()
+    rect(400, 0, 410, 110)
+    rect(400, 110, width, 120)
+    noErase()
+    fill(0, 0, 100)
+    textFont(variableWidthFont)
+    stroke(0, 0, 100)
+    strokeWeight(0.5)
+    textSize(14)
+
+    // now display the trick display buttons section
+    text('Trick display state/toggle', 414, 25)
+    textSize(15)
+    fill((displayDisguise) ? 120 : 0, 100, 75)
+    noStroke()
+    text(`Disguise creatures${(displayDisguise) ? "" : " not"} displayed`, 420, 45)
+    fill((displayTricks) ? 120 : 0, 100, 75)
+    text(`Flash and instants${(displayTricks) ? "" : " not"} displayed`, 420, 65)
 
     // formatting: displaying that the next part is cards able to be cast
     textSize(14)
+    fill(0, 0, 100)
     text('Cards able to be cast (press \'z\' to update)', 4, 325)
     noStroke()
+    erase()
     fill(237, 37, 20, 50)
-    rect(0, 329, 700, 333)
+    rect(0, 329, width, 335)
+    rect(0, 309, width, 315)
+    rect(300, 315, width, 329)
+    rect(200, )
+    noErase()
 
     // used to define the position of the next card
     let col = 0
@@ -402,8 +433,9 @@ function draw() {
         cardCMCs++
 
         noStroke()
-        fill(237, 37, 20, 50)
-        rect(-10, 325+row*rowHeight + cardCMCs*cardCMCSpacingHeight, 800, 335+row*rowHeight + cardCMCs*cardCMCSpacingHeight)
+        erase()
+        rect(0, 325+row*rowHeight + cardCMCs*cardCMCSpacingHeight, width, 335+row*rowHeight + cardCMCs*cardCMCSpacingHeight)
+        noErase()
     }
 
     // now we have to find what card is overed over if there is. to do this
