@@ -9,9 +9,12 @@ let fixedWidthFont
 let variableWidthFont
 let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
-// scryfall data url; BRO (the BROther's War)
-let url='https://api.scryfall.com/cards/search?q=set:mkm'
+
+// scryfall data url; OTJ (Outlaws of Thunder Junction)
+let url='https://api.scryfall.com/cards/search?q=set:otj'
+
 let instantsAndFlashCards=[] /* data for the instant and flash cards */
+let counterspells = [] /* data for the counterspells */
 let disguiseCards=[] /* data for the disguise cards */
 let mana = [0,0,0,0,0,0,0] /* mana in WUBRG order, then colorless and multicolored mana */
 let whiteIcon
@@ -69,7 +72,8 @@ function preload() {
     variableWidthFont = loadFont('data/meiryo.ttf')
 
     loadJSON(url, printAndPaginateData)
-    // loadJSON('https://api.scryfall.com/cards/search?q=set:wot', printAndPaginateData)
+    loadJSON('https://api.scryfall.com/cards/search?q=set:otp', printAndPaginateData)
+    loadJSON('https://api.scryfall.com/cards/search?q=set:big', printAndPaginateData)
 
     // iterate through all the mana symbols and load them
     whiteIcon = loadImage('svg/w.svg')
@@ -84,16 +88,19 @@ function preload() {
 
 
 
+
 // paginates the data if necessary, then filters the instants and flash cards
 function printAndPaginateData(data) {
     let currentCards = data['data']
 
     let instantsAndFlashCardsUnpaginated = filterInstantsAndFlashCards(currentCards)
     let disguiseCardsUnpaginated = filterDisguiseCards(currentCards)
+    let counterspellsUnpaginated = filterCounterspells(currentCards)
 
     // add the data to the json
-    instantsAndFlashCards = [ ...instantsAndFlashCards, ...instantsAndFlashCardsUnpaginated] /* spread operator: ... */
-    disguiseCards = [ ...disguiseCards, ...disguiseCardsUnpaginated] /* spread operator: ... */
+    instantsAndFlashCards = [...instantsAndFlashCards, ...instantsAndFlashCardsUnpaginated]
+    disguiseCards = [...disguiseCards, ...disguiseCardsUnpaginated] /* spread operator: ... */
+    counterspells = [...counterspells, ...counterspellsUnpaginated]
 
     if (data['has_more']) {
         loadJSON(data['next_page'], printAndPaginateData)
@@ -213,6 +220,23 @@ function setup() {
     print([""])
 }
 
+// get all the counterspells from the data
+function filterCounterspells(cards) {
+    let resultingCardList = []
+    for (let card of cards) {
+        if (!card["card_faces"]) {
+            if ((card["oracle_text"].includes("Counter target ") ||
+                card["oracle_text"].includes("counter target ")) &&
+                card["oracle_text"].includes(" spell")
+            ) {
+                resultingCardList.push(card)
+            }
+        }
+    }
+    return resultingCardList
+}
+
+// get all the disguise cards from the data
 function filterDisguiseCards(cards) {
     let resultingCardList = []
     for (let card of cards) {
@@ -250,6 +274,7 @@ function filterDisguiseCards(cards) {
     return resultingCardList
 }
 
+// get all the instants and flash cards from the data
 function filterInstantsAndFlashCards(cards) {
     // instants and flash cards
     let resultingCardList = []
@@ -279,7 +304,11 @@ function filterInstantsAndFlashCards(cards) {
             if (card['object'] !== 'card_face') {
                 // type_line is the type of the card. If it is an Instant, then it
                 // is a combat trick.
-                if (card['type_line'].includes('Instant')) {
+                if (card['type_line'].includes('Instant') &&
+                    !(((card["oracle_text"].includes("Counter target ") ||
+                            card["oracle_text"].includes("counter target ")) &&
+                        card["oracle_text"].includes(" spell")
+                    ))) {
                     resultingCardList.push(card)
                 }
                 // it may also be a combat trick if the card keywords includes
@@ -389,7 +418,6 @@ function draw() {
     rect(0, 329, width, 335)
     rect(0, 309, width, 315)
     rect(300, 315, width, 329)
-    rect(200, )
     noErase()
 
     // used to define the position of the next card
