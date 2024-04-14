@@ -2,6 +2,13 @@
  *  @author Cody
  *  @date 2023.01.20
  *
+ *  Planning:
+ *  There's also something I can do for cheating:
+ *  First, search for :mana1: ({1}). If there's a :mana1: in there, stop
+ *  there and append :mana1:.
+ *  Then search for :manar: ({R}). If there's a :manar: in there, stop there
+ *  and do the :mana2r: appendage.
+ *  If there''s nothing in there, stop there and append :mana2:.
  */
 
 let font
