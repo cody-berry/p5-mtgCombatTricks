@@ -668,7 +668,7 @@ function storeAvailableCards() {
                              // of cmc's and values of a list of card images
     let hybridManaPossibilities = findPossibleManaAvailableCombinations()
 
-    // find out the amount of mana availablee
+    // find out the amount of mana available
     let azoriusNum = azorius.numSelected
     let dimirNum = dimir.numSelected
     let rakdosNum = rakdos.numSelected
@@ -722,6 +722,7 @@ function storeAvailableCards() {
          sometimes not be
          selected!*/ !raritiesSelected[card['rarity']]) {
         } else {
+            if (card["oracle_text"].indexOf("Spree") !== -1) print(`Spree! ${card['name']}`)
             let cardCost = card['mana_cost']
 
             let canCastCard = false
