@@ -714,6 +714,21 @@ function storeAvailableCards() {
             }
         }
 
+        // now add mana to the mana cost by subtracting from the mana
+        // omitted (only for Spree cards)
+        if (card["oracle_text"].indexOf("Spree") !== -1) {
+            print(card["name"])
+            print(card["oracle_text"])
+            // search for a {1} add-on
+            if (card["oracle_text"].indexOf("+ {1} —") !== -1) {
+                genericManaOmitted -= 1
+            } else if (card["oracle_text"].indexOf("+ {R} —") !== -1) {
+                genericManaOmitted -= 1
+            } else {
+                genericManaOmitted -= 2
+            }
+        }
+
         if (cardCMC - genericManaOmitted > manaAvailable) {
             if (card["oracle_text"].indexOf("Convoke") === -1) {
                 continue
@@ -722,7 +737,6 @@ function storeAvailableCards() {
          sometimes not be
          selected!*/ !raritiesSelected[card['rarity']]) {
         } else {
-            if (card["oracle_text"].indexOf("Spree") !== -1) print(`Spree! ${card['name']}`)
             let cardCost = card['mana_cost']
 
             let canCastCard = false
