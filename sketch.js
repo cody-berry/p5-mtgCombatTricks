@@ -723,7 +723,12 @@ function storeAvailableCards() {
             if (card["oracle_text"].indexOf("+ {1} —") !== -1) {
                 genericManaOmitted -= 1
             } else if (card["oracle_text"].indexOf("+ {R} —") !== -1) {
-                genericManaOmitted -= 1
+                // this will always be Great Train Heist. In that case, we
+                // always have to test whether we have 2 or more R mana
+                // available. If so, only add 1. If not, add 2.
+                print()
+                if (mana[3] + mana[6] > 1) genericManaOmitted -= 1
+                else genericManaOmitted -= 2
             } else {
                 genericManaOmitted -= 2
             }
