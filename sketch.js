@@ -323,6 +323,15 @@ function filterInstantsAndFlashCards(cards) {
                 if (card['keywords'].includes('Flash')) {
                     resultingCardList.push(card)
                 }
+                // if the oracle text includes "as though it had flash if
+                // you pay {2} more to cast it", you can increase the CMC by 2
+                // there's no other case
+                if (card['oracle_text'].includes('as though it had flash if you pay {2} more to cast it')) {
+                    card["image_uris"] = card["image_uris"]
+                    card["rarity"] = card["rarity"]
+                    card["cmc"] += 2
+                    resultingCardList.push(card)
+                }
             }
         }
     }
