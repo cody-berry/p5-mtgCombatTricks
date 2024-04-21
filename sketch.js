@@ -332,6 +332,19 @@ function filterInstantsAndFlashCards(cards) {
                     card["cmc"] += 2
                     resultingCardList.push(card)
                 }
+
+                // if the oracle text includes ", Discard this card" or ",
+                // Discard {this card's name}", there's going to be a mana
+                // cost before and that should be the card's mana cost
+                let indexOfDiscardThisCard = max(
+                    card['oracle_text'].indexOf(', Discard this card'), card['oracle_text'].indexOf(', Discard ' + card['name']))
+                if (indexOfDiscardThisCard !== -1) {
+                    let indexOfNewline = max(
+                        card['oracle_text'].substring(0, indexOfDiscardThisCard).lastIndexOf("\n") + 1,
+                        card['oracle_text'].substring(0, indexOfDiscardThisCard).lastIndexOf("(") + 1
+                    )
+                    print(card['name'] + "\n" + card['oracle_text'].substring(indexOfNewline, indexOfDiscardThisCard))
+                }
             }
         }
     }
