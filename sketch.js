@@ -320,7 +320,8 @@ function filterInstantsAndFlashCards(cards) {
                 }
                 // it may also be a combat trick if the card keywords includes
                 // Flash. For example, in BRO, Zephyr Sentinel or Ambush Paratrooper.
-                if (card['keywords'].includes('Flash')) {
+                // Or if it says "has flash as long as".
+                if (card['keywords'].includes('Flash') || card['oracle_text'].includes("has flash as long as")) {
                     resultingCardList.push(card)
                 }
                 // if the oracle text includes "as though it had flash if
