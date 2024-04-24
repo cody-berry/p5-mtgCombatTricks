@@ -183,8 +183,8 @@ function setup() {
      *   url("wallpapers/???"));*/
     /* where ??? is a random wallpaper from the wallpapers directory. */
     let css = select("body")
-    let wallpapers = ["OTJ/Annie.jpg", "OTJ/Kellan.jpg",
-                      "OTJ/Rakdos.jpg", "OTJ/Tinybones.jpg", "OTJ/Vraska.jpg"]
+    let wallpapers = ["OTJ/Omenport Vigilante.jpg", "OTJ/Duelist of the Mind.jpg",
+                      "OTJ/Key to the Vault.jpg", "OTJ/Locomotive.jpg", "OTJ/Conduit Pylons.jpg"]
     css.style("background-image", "linear-gradient(\n" +
                                   "rgba(13, 13, 40, 0.3), \n" +
                                   "rgba(13, 13, 40, 0.5)), \n" +
