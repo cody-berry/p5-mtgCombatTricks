@@ -18,7 +18,7 @@ let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 
 // scryfall data url; OTJ (Outlaws of Thunder Junction)
-let url='https://api.scryfall.com/cards/search?q=set:otj'
+let url='https://api.scryfall.com/cards/search?q=set:mh3'
 
 let instantsAndFlashCards=[] /* data for the instant and flash cards */
 let counterspells = [] /* data for the counterspells */
@@ -79,8 +79,8 @@ function preload() {
     variableWidthFont = loadFont('data/meiryo.ttf')
 
     loadJSON(url, printAndPaginateData)
-    loadJSON('https://api.scryfall.com/cards/search?q=set:otp', printAndPaginateData)
-    loadJSON('https://api.scryfall.com/cards/search?q=set:big', printAndPaginateData)
+    // loadJSON('https://api.scryfall.com/cards/search?q=set:otp', printAndPaginateData)
+    // loadJSON('https://api.scryfall.com/cards/search?q=set:big', printAndPaginateData)
 
     // iterate through all the mana symbols and load them
     whiteIcon = loadImage('svg/w.svg')
