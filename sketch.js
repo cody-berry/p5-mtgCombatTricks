@@ -287,11 +287,15 @@ function filterInstantsAndFlashCards(cards) {
     let resultingCardList = []
     for (let card of cards) {
         if (card["card_faces"]) {
+            print(card["name"], card)
             for (let cardFace of card["card_faces"]) {
                 // type_line is the type of the card. If it is an Instant, then
                 // it is a combat trick.
                 if (cardFace['type_line'].includes('Instant')) {
-                    cardFace["image_uris"] = card["image_uris"]
+                    // sometimes the image_uris will be in the card face
+                    // itself. if so then we don't need to do anything.
+                    if (card["image_uris"])
+                        cardFace["image_uris"] = card["image_uris"]
                     cardFace["rarity"] = card["rarity"]
                     cardFace["cmc"] = calculateCMC(cardFace["mana_cost"])
                     resultingCardList.push(cardFace)
@@ -301,11 +305,15 @@ function filterInstantsAndFlashCards(cards) {
                 // Paratrooper.
                 if (cardFace['oracle_text'].includes('Flash') ||
                     cardFace['oracle_text'].includes('flash')) {
-                    cardFace["image_uris"] = card["image_uris"]
+                    // sometimes the image_uris will be in the card face
+                    // itself. if so then we don't need to do anything.
+                    if (card["image_uris"])
+                        cardFace["image_uris"] = card["image_uris"]
                     cardFace["rarity"] = card["rarity"]
                     cardFace["cmc"] = calculateCMC(cardFace["mana_cost"])
                     resultingCardList.push(cardFace)
                 }
+                print(cardFace["name"], cardFace)
             }
         } else {
             if (card['object'] !== 'card_face') {
@@ -345,19 +353,6 @@ function filterInstantsAndFlashCards(cards) {
                         card['oracle_text'].substring(0, indexOfDiscardThisCard).lastIndexOf("\n") + 1,
                         card['oracle_text'].substring(0, indexOfDiscardThisCard).lastIndexOf("(") + 1
                     )
-                    print(card['name'] + "\n" + card['oracle_text'].substring(indexOfNewline, indexOfDiscardThisCard))
-                } else {
-                    // if the oracle text includes "Reinforce ", then it
-                    // must be structured something like "Reinforce N—{mana
-                    // cost}"
-                    // we need to find the index of the next "{" and then go
-                    // until we hit a \n
-                    let indexOfReinforce = card['oracle_text'].indexOf("Reinforce ")
-                    if (indexOfReinforce !== -1) {
-                        print(card['name'], "is a Reinforce card! The rest of",
-                            "its oracle text appears to be... *hum* *hum*",
-                            "*hum*\n" + card['oracleText'].substring(indexOfReinforce))
-                    }
                 }
             }
         }
@@ -753,8 +748,6 @@ function storeAvailableCards() {
         // now add mana to the mana cost by subtracting from the mana
         // omitted (only for Spree cards)
         if (card["oracle_text"].indexOf("Spree") !== -1) {
-            print(card["name"])
-            print(card["oracle_text"])
             // search for a {1} add-on
             if (card["oracle_text"].indexOf("+ {1} —") !== -1) {
                 genericManaOmitted -= 1
@@ -819,6 +812,7 @@ function storeAvailableCards() {
                 }
             }
             if (canCastCard) {
+                print(card["name"])
                 loadImage(card['image_uris']['png'],
                     data => {
                         loadImage(card['image_uris']['png'], data2 => {
