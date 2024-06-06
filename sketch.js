@@ -70,7 +70,7 @@ let colors = {"W": [59, 25, 95],
     "B": [0, 3, 47],
     "R": [5, 80, 84],
     "G": [155, 95, 71],
-    "C": [240, 5, 87],
+    "C": [240, 10, 87],
     "M": [41, 40, 100]}
 
 function preload() {
@@ -338,13 +338,26 @@ function filterInstantsAndFlashCards(cards) {
                 // Discard {this card's name}", there's going to be a mana
                 // cost before and that should be the card's mana cost
                 let indexOfDiscardThisCard = max(
-                    card['oracle_text'].indexOf(', Discard this card'), card['oracle_text'].indexOf(', Discard ' + card['name']))
+                    card['oracle_text'].indexOf(', Discard this card'),
+                    card['oracle_text'].indexOf(', Discard ' + card['name']))
                 if (indexOfDiscardThisCard !== -1) {
                     let indexOfNewline = max(
                         card['oracle_text'].substring(0, indexOfDiscardThisCard).lastIndexOf("\n") + 1,
                         card['oracle_text'].substring(0, indexOfDiscardThisCard).lastIndexOf("(") + 1
                     )
                     print(card['name'] + "\n" + card['oracle_text'].substring(indexOfNewline, indexOfDiscardThisCard))
+                } else {
+                    // if the oracle text includes "Reinforce ", then it
+                    // must be structured something like "Reinforce N—{mana
+                    // cost}"
+                    // we need to find the index of the next "{" and then go
+                    // until we hit a \n
+                    let indexOfReinforce = card['oracle_text'].indexOf("Reinforce ")
+                    if (indexOfReinforce !== -1) {
+                        print(card['name'], "is a Reinforce card! The rest of",
+                            "its oracle text appears to be... *hum* *hum*",
+                            "*hum*\n" + card['oracleText'].substring(indexOfReinforce))
+                    }
                 }
             }
         }
@@ -776,13 +789,18 @@ function storeAvailableCards() {
                         'B': mana[2] + hybridLandRepresentation["B"], // mana[2] = black mana
                         'R': mana[3] + hybridLandRepresentation["R"], // mana[3] = red mana
                         'G': mana[4] + hybridLandRepresentation["G"], // mana[4] = green mana
+                        'C': mana[5], // mana[5] = colorless mana
                         'M': mana[6]  // mana[6] = gold mana
-                    } // colorless mana is not included because we ignore numbers
+                    } // colorless mana is included even though we don't
+                    // care about numbers because there are mana costs that
+                    // specifically say colorless
                     for (let char of cost) {
-                        if (['W', 'U', 'B', 'R', 'G'] // characters to be selected
+                        if (['W', 'U', 'B', 'R', 'G', 'C'] // only colors are accounted for. not numbers
                             .includes(char)) {
-                            manaMinusUsed[char] -= 1 // char's gonna be W, U, B, R, or G
-                            if (manaMinusUsed[char] < 0) {
+                            manaMinusUsed[char] -= 1 // char's gonna be W, U, B, R, G, or C
+
+                            // note: C can't be payed for with M.
+                            if (manaMinusUsed[char] < 0 && char !== 'C') {
                                 manaMinusUsed[char] = 0
                                 manaMinusUsed["M"] -= 1
                             }
