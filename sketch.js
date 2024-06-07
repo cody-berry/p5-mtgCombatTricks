@@ -328,7 +328,8 @@ function filterInstantsAndFlashCards(cards) {
                 }
                 // it may also be a combat trick if the card keywords includes
                 // Flash. For example, in BRO, Zephyr Sentinel or Ambush Paratrooper.
-                // Or if it says "has flash as long as".
+                // Or if it says "has flash as long as", like Colossal
+                // Rattlewurm or Take for a Ride.
                 if (card['keywords'].includes('Flash') || card['oracle_text'].includes("has flash as long as")) {
                     resultingCardList.push(card)
                 }
@@ -336,8 +337,6 @@ function filterInstantsAndFlashCards(cards) {
                 // you pay {2} more to cast it", you can increase the CMC by 2
                 // there's no other case
                 if (card['oracle_text'].includes('as though it had flash if you pay {2} more to cast it')) {
-                    card["image_uris"] = card["image_uris"]
-                    card["rarity"] = card["rarity"]
                     card["cmc"] += 2
                     resultingCardList.push(card)
                 }
@@ -349,10 +348,18 @@ function filterInstantsAndFlashCards(cards) {
                     card['oracle_text'].indexOf(', Discard this card'),
                     card['oracle_text'].indexOf(', Discard ' + card['name']))
                 if (indexOfDiscardThisCard !== -1) {
+                    // if we don't do this and the card was pushed onto the
+                    // resultingCardList earlier, the card in
+                    // resultingCardList will get modified
+                    let newCard = {...card}
+
                     let indexOfNewline = max(
-                        card['oracle_text'].substring(0, indexOfDiscardThisCard).lastIndexOf("\n") + 1,
-                        card['oracle_text'].substring(0, indexOfDiscardThisCard).lastIndexOf("(") + 1
+                        newCard['oracle_text'].substring(0, indexOfDiscardThisCard).lastIndexOf("\n") + 1,
+                        newCard['oracle_text'].substring(0, indexOfDiscardThisCard).lastIndexOf("(") + 1
                     )
+                    newCard['mana_cost'] = newCard['oracle_text'].substring(indexOfNewline, indexOfDiscardThisCard)
+                    newCard["cmc"] = calculateCMC(newCard['mana_cost'])
+                    resultingCardList.push(newCard)
                 }
             }
         }
