@@ -184,8 +184,8 @@ function setup() {
     /* where ??? is a random wallpaper from the wallpapers directory. */
     let css = select("body")
     let wallpapers = ["MH3/Bountiful Landscape.jpg", "MH3/Flooded Strand.jpg",
-                      "MH3/Haven of the Harvest.jpg", "MH3/Razorgrass Field.jpg",
-                      "MH3/Tanglespan Bridgeworks.jpg", "MH3/Tranquil Landscape.jpg"]
+                      "MH3/Plains.jpg", "MH3/Razorgrass Field.jpg",
+                      "MH3/Wooded Foothills.jpg", "MH3/Tranquil Landscape.jpg"]
     css.style("background-image", "linear-gradient(\n" +
                                   "rgba(13, 13, 40, 0.3), \n" +
                                   "rgba(13, 13, 40, 0.5)), \n" +
