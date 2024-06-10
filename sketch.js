@@ -110,6 +110,7 @@ function printAndPaginateData(data) {
     counterspells = [...counterspells, ...counterspellsUnpaginated]
 
     if (data['has_more']) {
+        print("—————————————————————————————————————")
         loadJSON(data['next_page'], printAndPaginateData)
     }
 }
@@ -226,6 +227,9 @@ function setup() {
         "{2}{U}{R}", "{U}{U}{R}", "{2}{R}{R}", "{U}{R}{R}"])
     print(["{R}", "{G}"])
     print([""])
+
+
+    print(instantsAndFlashCards)
 }
 
 // get all the counterspells from the data
@@ -287,8 +291,8 @@ function filterInstantsAndFlashCards(cards) {
     // instants and flash cards
     let resultingCardList = []
     for (let card of cards) {
+        print(card["name"])
         if (card["card_faces"]) {
-            print(card["name"], card)
             for (let cardFace of card["card_faces"]) {
                 // type_line is the type of the card. If it is an Instant, then
                 // it is a combat trick.
@@ -304,7 +308,7 @@ function filterInstantsAndFlashCards(cards) {
                 // it may also be a combat trick if the oracle text includes
                 // Flash. For example, in BRO, Zephyr Sentinel or Ambush
                 // Paratrooper.
-                if (cardFace['oracle_text'].includes('Flash') ||
+                else if (cardFace['oracle_text'].includes('Flash') ||
                     cardFace['oracle_text'].includes('flash')) {
                     // sometimes the image_uris will be in the card face
                     // itself. if so then we don't need to do anything.
@@ -314,7 +318,6 @@ function filterInstantsAndFlashCards(cards) {
                     cardFace["cmc"] = calculateCMC(cardFace["mana_cost"])
                     resultingCardList.push(cardFace)
                 }
-                print(cardFace["name"], cardFace)
             }
         } else {
             if (card['object'] !== 'card_face') {
@@ -325,19 +328,22 @@ function filterInstantsAndFlashCards(cards) {
                             card["oracle_text"].includes("counter target ")) &&
                         card["oracle_text"].includes(" spell")
                     ))) {
+                    print("made it!")
                     resultingCardList.push(card)
                 }
                 // it may also be a combat trick if the card keywords includes
                 // Flash. For example, in BRO, Zephyr Sentinel or Ambush Paratrooper.
                 // Or if it says "has flash as long as", like Colossal
                 // Rattlewurm or Take for a Ride.
-                if (card['keywords'].includes('Flash') || card['oracle_text'].includes("has flash as long as")) {
+                else if (card['keywords'].includes('Flash') || card['oracle_text'].includes("has flash as long as")) {
+                    print("made it!")
                     resultingCardList.push(card)
                 }
                 // if the oracle text includes "as though it had flash if
                 // you pay {2} more to cast it", you can increase the CMC by 2
                 // there's no other case
                 if (card['oracle_text'].includes('as though it had flash if you pay {2} more to cast it')) {
+                    print("made it!")
                     card["cmc"] += 2
                     resultingCardList.push(card)
                 }
@@ -349,6 +355,7 @@ function filterInstantsAndFlashCards(cards) {
                     card['oracle_text'].indexOf(', Discard this card'),
                     card['oracle_text'].indexOf(', Discard ' + card['name']))
                 if (indexOfDiscardThisCard !== -1) {
+                    print("made it!")
                     // if we don't do this and the card was pushed onto the
                     // resultingCardList earlier, the card in
                     // resultingCardList will get modified
@@ -808,7 +815,7 @@ function storeAvailableCards() {
                         }
                     }
                     let canDoThisPossibility = true
-                    for (let manaAmount in manaMinusUsed) { // warning: this starts out as the color
+                    for (let manaAmount in manaMinusUsed) {
                         manaAmount = manaMinusUsed[manaAmount]
                         if (manaAmount < 0) {
                             canDoThisPossibility = false
@@ -819,8 +826,9 @@ function storeAvailableCards() {
                     }
                 }
             }
+            print(card["name"], card)
             if (canCastCard) {
-                print(card["name"])
+                print("made it!")
                 loadImage(card['image_uris']['png'],
                     data => {
                         loadImage(card['image_uris']['png'], data2 => {
