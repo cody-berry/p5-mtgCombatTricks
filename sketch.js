@@ -17,8 +17,8 @@ let variableWidthFont
 let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 
-// scryfall data url; OTJ (Outlaws of Thunder Junction)
-let url='https://api.scryfall.com/cards/search?q=set:mh3'
+// scryfall data url; DSK (Duskmourn)
+let url='https://api.scryfall.com/cards/search?q=set:dsk'
 
 let instantsAndFlashCards=[] /* data for the instant and flash cards */
 let counterspells = [] /* data for the counterspells */
@@ -183,10 +183,17 @@ function setup() {
      *   rgba(13, 13, 40, 0.5),
      *   url("wallpapers/???"));*/
     /* where ??? is a random wallpaper from the wallpapers directory. */
+    /* we get wallpapers from mtgpics.com/set?set=??? where ??? is the set
+     number. Duskmourn's set number is 454. */
     let css = select("body")
-    let wallpapers = ["MH3/Bountiful Landscape.jpg", "MH3/Flooded Strand.jpg",
-                      "MH3/Plains.jpg", "MH3/Razorgrass Field.jpg",
-                      "MH3/Wooded Foothills.jpg", "MH3/Tranquil Landscape.jpg"]
+    let wallpapers = [
+        "DSK/Friendly Teddy.jpg",
+        "DSK/Glimmer.jpg",
+        "DSK/Glimmerlight.jpg",
+        "DSK/Gloomlake Verge.jpg",
+        "DSK/Murky Sewer.jpg",
+        "DSK/Zimone.jpg"
+    ]
     css.style("background-image", "linear-gradient(\n" +
                                   "rgba(13, 13, 40, 0.3), \n" +
                                   "rgba(13, 13, 40, 0.5)), \n" +
