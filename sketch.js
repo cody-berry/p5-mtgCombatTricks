@@ -18,7 +18,9 @@ let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 
 // scryfall data url; DSK (Duskmourn)
-let url='https://api.scryfall.com/cards/search?q=set:dsk'
+// let url='https://api.scryfall.com/cards/search?q=set:dsk'
+// actually, we're doing DFT (Aetherdrift)
+let url='https://api.scryfall.com/cards/search?q=e%3Aspg+cn%E2%89%A584+cn%E2%89%A4103+OR+e%3Adft&unique=prints&as=grid&order=set'
 
 let instantsAndFlashCards=[] /* data for the instant and flash cards */
 let counterspells = [] /* data for the counterspells */
