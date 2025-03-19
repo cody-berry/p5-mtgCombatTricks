@@ -128,6 +128,8 @@ function setup() {
     /* initialize instruction div */
     instructions = select('#ins')
     instructions.html(`<pre>
+        Here's my <a href="https://cody-berry.github.io/p5-mtgCombatTricks/README.md">README!</a>
+        
         numpad 1 → freeze sketch
         W, U, B, R, G, C, or click on symbol → Add 1 mana
         w, u, b, r, g, or c → Remove 1 White/Blue/Black/Red/Green/Colorless mana
