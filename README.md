@@ -12,9 +12,8 @@ You can technically see when entering the sketch, but I'll put the
 instructions here:
 
     numpad 1 → freeze sketch
-    W, U, B, R, G, C, or click on symbol → Add 1 mana
+    W, U, B, R, G, C, or click on symbol → Add 1 White/Blue/Black/Red/Green/Colorless mana
     w, u, b, r, g, or c → Remove 1 White/Blue/Black/Red/Green/Colorless mana
-    z → Display all available combat tricks
 
     Hover over a card to display the trick in the middle of the screen.
     The hovered combat trick cannot change while you are hovering over the 
