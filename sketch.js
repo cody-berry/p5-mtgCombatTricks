@@ -19,8 +19,8 @@ let debugCorner /* output debug text in the bottom left corner of the canvas */
 
 // scryfall data url; DSK (Duskmourn)
 // let url='https://api.scryfall.com/cards/search?q=set:dsk'
-// actually, we're doing TDM (Tarkir Dragonstorm)
-let url='https://api.scryfall.com/cards/search?q=set:tdm'
+// actually, we're doing FIN (Final Fantasy)
+let url='https://api.scryfall.com/cards/search?q=set:fin'
 
 let instantsAndFlashCards=[] /* data for the instant and flash cards */
 let counterspells = [] /* data for the counterspells */
