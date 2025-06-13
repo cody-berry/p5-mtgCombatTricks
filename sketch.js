@@ -20,7 +20,7 @@ let debugCorner /* output debug text in the bottom left corner of the canvas */
 // scryfall data url; DSK (Duskmourn)
 // let url='https://api.scryfall.com/cards/search?q=set:dsk'
 // actually, we're doing FIN (Final Fantasy)
-let url='https://api.scryfall.com/cards/search?q=set:fin'
+let url='https://api.scryfall.com/cards/search?q=set:fin or set:fca'
 
 let instantsAndFlashCards=[] /* data for the instant and flash cards */
 let counterspells = [] /* data for the counterspells */
@@ -188,22 +188,32 @@ function setup() {
      *   url("wallpapers/???"));*/
     /* where ??? is a random wallpaper from the wallpapers directory. */
     /* we get wallpapers from mtgpics.com/set?set=??? where ??? is the set
-     number. Duskmourn's set number is 454. */
+     number. "?" is actually a character in there. Duskmourn's set number is
+      454. */
     let css = select("body")
     let wallpapers = [
-        "DSK/Friendly Teddy.jpg",
-        "DSK/Glimmer.jpg",
-        "DSK/Glimmerlight.jpg",
-        "DSK/Gloomlake Verge.jpg",
-        "DSK/Murky Sewer.jpg",
-        "DSK/Zimone.jpg"
+        "FIN/Astrologian's Planisphere.jpg",
+        "FIN/Delivery Moogle.jpg",
+        "FIN/Gysahl Greens.jpg",
+        "FIN/Tataru Taru.jpg",
+        "FIN/Dragoon's Lance.jpg",
+        "FIN/Lalafell.jpg",
+        "FIN/Bard's Bow.jpg",
     ]
+    let selectedWallpaper = wallpapers[floor(random() * wallpapers.length)]
     css.style("background-image", "linear-gradient(\n" +
                                   "rgba(13, 13, 40, 0.3), \n" +
                                   "rgba(13, 13, 40, 0.5)), \n" +
                                   "url(\"wallpapers/" +
-                                  wallpapers[floor(random() * wallpapers.length)] +
+                                  selectedWallpaper +
                                   "\")")
+    css = select("html")
+    css.style("background-image", "linear-gradient(\n" +
+        "rgba(13, 13, 40, 0.3), \n" +
+        "rgba(13, 13, 40, 0.5)), \n" +
+        "url(\"wallpapers/" +
+        selectedWallpaper +
+        "\")")
     // css.style("background-repeat", "no-repeat")
     // css.style("background-attachment", "fixed")
     // css.style("background-position", "center")
@@ -313,7 +323,13 @@ function filterInstantsAndFlashCards(cards) {
                     if (card["image_uris"])
                         cardFace["image_uris"] = card["image_uris"]
                     cardFace["rarity"] = card["rarity"]
-                    cardFace["cmc"] = calculateCMC(cardFace["mana_cost"])
+                    cardFace["cmc"] = calculateCMC(cardFace["mana_cost"]) // careful though. a card with the id
+                    // 548dd152-f0b6-4e8f-9afc-a4ec1671b648 had the mana
+                    // cost entered into the wrong side of the card face!
+                    if (card["id"] === "548dd152-f0b6-4e8f-9afc-a4ec1671b648") {
+                        cardFace["cmc"] = 3
+                        cardFace["mana_cost"] = "{2}{R}"
+                    }
                     resultingCardList.push(cardFace)
                 }
                 // it may also be a combat trick if the oracle text includes
