@@ -20,7 +20,7 @@ let debugCorner /* output debug text in the bottom left corner of the canvas */
 // scryfall data url; DSK (Duskmourn)
 // let url='https://api.scryfall.com/cards/search?q=set:dsk'
 // actually, we're doing FIN (Final Fantasy)
-let url='https://api.scryfall.com/cards/search?q=set:fin or set:fca'
+let url='https://api.scryfall.com/cards/search?q=set:om1 OR (e:spe)'
 
 let instantsAndFlashCards=[] /* data for the instant and flash cards */
 let counterspells = [] /* data for the counterspells */
@@ -192,13 +192,12 @@ function setup() {
       454. */
     let css = select("body")
     let wallpapers = [
-        "FIN/Astrologian's Planisphere.jpg",
-        "FIN/Delivery Moogle.jpg",
-        "FIN/Gysahl Greens.jpg",
-        "FIN/Tataru Taru.jpg",
-        "FIN/Dragoon's Lance.jpg",
-        "FIN/Lalafell.jpg",
-        "FIN/Bard's Bow.jpg",
+        "EoE/Another Forest.jpg",
+        "EoE/Eternity Elevator.jpg",
+        "EoE/Forest.jpg",
+        "EoE/Kavaron.jpg",
+        "EoE/Mountain.jpg",
+        "EoE/Plains.jpg",
     ]
     let selectedWallpaper = wallpapers[floor(random() * wallpapers.length)]
     css.style("background-image", "linear-gradient(\n" +
