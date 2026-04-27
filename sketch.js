@@ -19,8 +19,8 @@ let debugCorner /* output debug text in the bottom left corner of the canvas */
 
 // scryfall data url; DSK (Duskmourn)
 // let url='https://api.scryfall.com/cards/search?q=set:dsk'
-// actually, we're doing FIN (Final Fantasy)
-let url='https://api.scryfall.com/cards/search?q=set:om1 OR (e:omb)'
+// actually, we're doing OM1 (Through the Omenpaths)
+let url='https://api.scryfall.com/cards/search?q=e:spg cn≥149 cn≤158 OR set:sos OR set:soa'
 
 let instantsAndFlashCards=[] /* data for the instant and flash cards */
 let counterspells = [] /* data for the counterspells */
@@ -349,12 +349,28 @@ function filterInstantsAndFlashCards(cards) {
             if (card['object'] !== 'card_face') {
                 // type_line is the type of the card. If it is an Instant, then it
                 // is a combat trick.
-                if (card['type_line'].includes('Instant') &&
-                    !(((card["oracle_text"].includes("Counter target ") ||
-                            card["oracle_text"].includes("counter target ")) &&
-                        card["oracle_text"].includes(" spell")
-                    ))) {
+                if (card['type_line'].includes('Instant')
+                    // &&
+                    // !(((card["oracle_text"].includes("Counter target ") ||
+                    //         card["oracle_text"].includes("counter target ")) &&
+                    //     card["oracle_text"].includes(" spell")))
+                    ) {
                     print("made it!")
+
+                    // modify to enweb cost too if it's
+                    let indexOfEnweb = max(
+                        card['oracle_text'].indexOf('Web-slinging '),
+                        card['oracle_text'].indexOf('Enweb '))
+                    if (indexOfEnweb !== -1) {
+                        let indexOfManaCost =
+                            card['oracle_text'].substring(indexOfEnweb + 1).indexOf(" ") + indexOfEnweb + 2
+                        let indexOfEndManaCost =
+                            card['oracle_text'].substring(indexOfManaCost + 1).indexOf(" ") + indexOfManaCost + 1
+
+                        card['mana_cost'] = card['oracle_text'].substring(indexOfManaCost, indexOfEndManaCost)
+                        card["cmc"] = calculateCMC(card['mana_cost'])
+                    }
+
                     resultingCardList.push(card)
                 }
                 // it may also be a combat trick if the card keywords includes
@@ -365,6 +381,7 @@ function filterInstantsAndFlashCards(cards) {
                     print("made it!")
                     resultingCardList.push(card)
                 }
+
                 // if the oracle text includes "as though it had flash if
                 // you pay {2} more to cast it", you can increase the CMC by 2
                 // there's no other case
@@ -678,7 +695,9 @@ function findPossibleManaCostCombinations(hybridManaCost) {
         if (manaSymbol !== "") { // the first mana symbol is "" because at the beginning there's a "{".
             manaSymbol = "{" + manaSymbol
             if (manaSymbol.includes("/")) {
-                hybridManaSymbols.push(manaSymbol)
+                if (!manaSymbol.includes("P")) {
+                    hybridManaSymbols.push(manaSymbol)
+                }
             } else {
                 nonHybridManaSymbol += manaSymbol
             }
@@ -785,7 +804,8 @@ function storeAvailableCards() {
                 }
             }
         }
-
+        // if there's phyrexian mana, we exclude that
+        cardCMC -= card['mana_cost'].split("P").length - 1
         // now add mana to the mana cost by subtracting from the mana
         // omitted (only for Spree cards)
         if (card["oracle_text"].indexOf("Spree") !== -1) {
@@ -852,9 +872,8 @@ function storeAvailableCards() {
                     }
                 }
             }
-            print(card["name"], card)
             if (canCastCard) {
-                print("made it!")
+                print(card.name + " made it!")
                 loadImage(card['image_uris']['png'],
                     data => {
                         loadImage(card['image_uris']['png'], data2 => {
